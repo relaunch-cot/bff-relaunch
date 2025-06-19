@@ -1,13 +1,13 @@
 package routes
 
 import (
-	"bff.com/m/resource"
 	"github.com/gin-gonic/gin"
+	"github.com/relaunch-cot/bff/resource"
 )
 
-func addRoutes(r *gin.RouterGroup) {
+func AddRoutes(r *gin.RouterGroup) {
 	v1 := r.Group("/v1")
 
 	user := v1.Group("/user")
-	user.POST("", resource.Servers)
+	user.POST("", resource.Servers.User.CreateUser)
 }

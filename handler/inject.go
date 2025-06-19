@@ -1,11 +1,11 @@
 package handler
 
-import handler "bff.com/m/handler/user"
+import "github.com/relaunch-cot/bff/grpc"
 
 type Handlers struct {
 	User IUser
 }
 
-func (c *Handlers) Inject(rgrpc *grpc.GRPC) {
-	c.User = handler.NewUserHandler(grpc)
+func (c *Handlers) Inject(grpc *grpc.Grpc) {
+	c.User = NewUserHandler(grpc)
 }

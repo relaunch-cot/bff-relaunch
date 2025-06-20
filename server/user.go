@@ -66,7 +66,7 @@ func (r *resource) LoginUser(c *gin.Context) {
 
 	loginUserResponse, err := r.handler.User.LoginUser(&ctx, loginUserReq)
 	if err != nil {
-		c.JSON(404, gin.H{"message": "error calling handler"})
+		c.JSON(404, gin.H{"message": err.Error()})
 	}
 
 	c.JSON(http.StatusOK, loginUserResponse)

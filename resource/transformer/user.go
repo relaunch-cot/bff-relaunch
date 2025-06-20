@@ -12,3 +12,10 @@ func CreateUserToProto(in *model.User) (*pb.CreateUserRequest, error) {
 		Password: in.Password,
 	}, nil
 }
+
+func LoginUserToProto(in *model.User) (*pb.LoginUserRequest, error) {
+	return &pb.LoginUserRequest{
+		Email:    in.Email,
+		Password: in.Password,
+	}, nil
+}

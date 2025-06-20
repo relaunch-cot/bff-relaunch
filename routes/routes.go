@@ -9,5 +9,6 @@ func AddRoutes(r *gin.RouterGroup) {
 	v1 := r.Group("/v1")
 
 	user := v1.Group("/user")
-	user.POST("", resource.Servers.User.CreateUser)
+	user.POST("/register", resource.Servers.User.CreateUser)
+	user.POST("/login", resource.Servers.User.LoginUser)
 }

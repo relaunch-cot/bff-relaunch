@@ -64,6 +64,12 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20250619205246-66e3c470742f h1:v+UXY+mAbjvGnheNcmGOIORoD/5HxgLf7S9aY40QzD8=
 github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20250619205246-66e3c470742f/go.mod h1:9Hsr0mypJBzGNIHJix/40sSmOC6VAoagLMX/NnuyUnU=
+github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20250620143050-61429c584bc9 h1:LjYncKwzKHIA8v/hEB0o1vv0YxLrEAbNwqyz+bHYNOg=
+github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20250620143050-61429c584bc9/go.mod h1:AnBqPVRdO0Fr/Cscv1OszBA5hDJCM4LylAvj39riXws=
+github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20250620150124-826ae12b5d57 h1:AJp2hO4CZsYSrpIlsl5J1GOnm8BuPnAgMtjbI6eY8yI=
+github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20250620150124-826ae12b5d57/go.mod h1:AnBqPVRdO0Fr/Cscv1OszBA5hDJCM4LylAvj39riXws=
+github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20250620161939-607a205d8c5b h1:5/zCazQ2hllLY7tCiYoncfjmABF7LLyx4oDM845slhI=
+github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20250620161939-607a205d8c5b/go.mod h1:AnBqPVRdO0Fr/Cscv1OszBA5hDJCM4LylAvj39riXws=
 github.com/rogpeppe/go-internal v1.8.0 h1:FCbCCtXNOY3UtUuHUYaghJg4y7Fd14rXifAYUAtL9R8=
 github.com/rogpeppe/go-internal v1.8.0/go.mod h1:WmiCO8CzOY8rg0OYDC4/i/2WRWAB6poM+XZ2dLUbcbE=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=

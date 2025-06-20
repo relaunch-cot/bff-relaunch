@@ -4,9 +4,11 @@ import (
 	"github.com/relaunch-cot/bff/handler"
 	model "github.com/relaunch-cot/bff/model/user"
 	"github.com/relaunch-cot/bff/resource/transformer"
+	"net/http"
+
+	params "github.com/relaunch-cot/bff/params/user"
 
 	"github.com/gin-gonic/gin"
-	"strings"
 )
 
 type IUser interface {
@@ -14,38 +16,26 @@ type IUser interface {
 }
 
 func (r *resource) CreateUser(c *gin.Context) {
-	name := c.Param("name")
-	if strings.TrimSpace(name) == "" {
-		c.JSON(404, gin.H{"message": "the param name can not be empty"})
-		return
-	}
-
-	email := c.Param("email")
-	if strings.TrimSpace(email) == "" {
-		c.JSON(404, gin.H{"message": "the param email can not be empty"})
-		return
-	}
-
-	password := c.Param("password")
-	if strings.TrimSpace(password) == "" {
-		c.JSON(404, gin.H{"message": "the param password can not be empty"})
-		return
+	in := new(params.CreateUserPOST)
+	err := c.Bind(in)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error getting query params"})
 	}
 
 	user := &model.User{
-		Name:     name,
-		Email:    email,
-		Password: password,
+		Name:     in.Name,
+		Email:    in.Email,
+		Password: in.Password,
 	}
 
-	in, err := transformer.CreateUserToProto(user)
+	createUserReq, err := transformer.CreateUserToProto(user)
 	if err != nil {
 		c.JSON(500, gin.H{"message": err.Error()})
 	}
 
 	ctx := c.Request.Context()
 
-	err = r.handler.User.CreateUser(&ctx, in)
+	err = r.handler.User.CreateUser(&ctx, createUserReq)
 	if err != nil {
 		c.JSON(404, gin.H{"message": err.Error()})
 		return

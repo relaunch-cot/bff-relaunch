@@ -7,6 +7,7 @@ import (
 
 type IUserGRPC interface {
 	CreateUser(ctx *context.Context, user *pb.CreateUserRequest) error
+	LoginUser(ctx *context.Context, in *pb.LoginUserRequest) (*pb.LoginUserResponse, error)
 }
 
 type resource struct {
@@ -20,6 +21,15 @@ func (r *resource) CreateUser(ctx *context.Context, in *pb.CreateUserRequest) er
 	}
 
 	return nil
+}
+
+func (r *resource) LoginUser(ctx *context.Context, in *pb.LoginUserRequest) (*pb.LoginUserResponse, error) {
+	loginUserResponse, err := r.grpcClient.LoginUser(*ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return loginUserResponse, nil
 }
 
 func NewUserGrpcClient(grpcClient pb.UserServiceClient) IUserGRPC {

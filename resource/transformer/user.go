@@ -19,3 +19,11 @@ func LoginUserToProto(in *model.User) (*pb.LoginUserRequest, error) {
 		Password: in.Password,
 	}, nil
 }
+
+func UpdateUserPasswordToProto(email, currentPassword, newPassword string) (*pb.UpdateUserPasswordRequest, error) {
+	return &pb.UpdateUserPasswordRequest{
+		Email:           email,
+		CurrentPassword: currentPassword,
+		NewPassword:     newPassword,
+	}, nil
+}

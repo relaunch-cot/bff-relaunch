@@ -87,13 +87,13 @@ func (r *resource) UpdateUserPassword(c *gin.Context) {
 	}
 
 	ctx := c.Request.Context()
-	updateUserPasswordResponse, err := r.handler.User.UpdateUserPassword(&ctx, updateUserPasswordReq)
+	err = r.handler.User.UpdateUserPassword(&ctx, updateUserPasswordReq)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, updateUserPasswordResponse)
+	c.JSON(http.StatusOK, gin.H{"message": "password updated successfully"})
 }
 
 func NewUserServer(handler *handler.Handlers) IUser {

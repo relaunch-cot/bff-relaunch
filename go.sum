@@ -62,12 +62,8 @@ github.com/pelletier/go-toml/v2 v2.2.3 h1:YmeHyLY8mFWbdkNWwpr+qIL2bEqT0o95WSdkNH
 github.com/pelletier/go-toml/v2 v2.2.3/go.mod h1:MfCQTFTvCcUyyvvwm1+G6H/jORL20Xlb6rzQu9GuUkc=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20250620183549-71e3453ca2cc h1:GYGvlJ691UNft25qwBplC9UeTHgjhN+Dpxy+hrSriMY=
-github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20250620183549-71e3453ca2cc/go.mod h1:AnBqPVRdO0Fr/Cscv1OszBA5hDJCM4LylAvj39riXws=
-github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20250708192422-677e0badd762 h1:JRl44dSlTzRqERo/9TJoPlEMBcfnV7/t2TN9AnPR1j8=
-github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20250708192422-677e0badd762/go.mod h1:AnBqPVRdO0Fr/Cscv1OszBA5hDJCM4LylAvj39riXws=
-github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20250708200634-cd97be5d094a h1:yRJ9WvSbnntijaPtD9+vwb2aV5Fbg99iNBKXGgI4OOQ=
-github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20250708200634-cd97be5d094a/go.mod h1:AnBqPVRdO0Fr/Cscv1OszBA5hDJCM4LylAvj39riXws=
+github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20250826184848-7d30e10c66fe h1:KRJG7HJwsSDHZGXSRuGpKhpu0O/Kc/cICJq4REnhYF8=
+github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20250826184848-7d30e10c66fe/go.mod h1:AnBqPVRdO0Fr/Cscv1OszBA5hDJCM4LylAvj39riXws=
 github.com/rogpeppe/go-internal v1.8.0 h1:FCbCCtXNOY3UtUuHUYaghJg4y7Fd14rXifAYUAtL9R8=
 github.com/rogpeppe/go-internal v1.8.0/go.mod h1:WmiCO8CzOY8rg0OYDC4/i/2WRWAB6poM+XZ2dLUbcbE=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=

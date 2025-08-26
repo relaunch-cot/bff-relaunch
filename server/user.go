@@ -14,6 +14,7 @@ import (
 type IUser interface {
 	CreateUser(c *gin.Context)
 	LoginUser(c *gin.Context)
+	UpdateUserPassword(c *gin.Context)
 }
 
 func (r *resource) CreateUser(c *gin.Context) {
@@ -38,7 +39,7 @@ func (r *resource) CreateUser(c *gin.Context) {
 
 	err = r.handler.User.CreateUser(&ctx, createUserReq)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": "error calling handler"})
+		c.JSON(http.StatusNotFound, gin.H{"message": "error calling user service"})
 		return
 	}
 
@@ -70,6 +71,29 @@ func (r *resource) LoginUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, loginUserResponse)
+}
+
+func (r *resource) UpdateUserPassword(c *gin.Context) {
+	in := new(params.UpdateUserPasswordPATCH)
+	err := c.Bind(in)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error getting query params"})
+		return
+	}
+
+	updateUserPasswordReq, err := transformer.UpdateUserPasswordToProto(in.Email, in.CurrentPassword, in.NewPassword)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+	}
+
+	ctx := c.Request.Context()
+	updateUserPasswordResponse, err := r.handler.User.UpdateUserPassword(&ctx, updateUserPasswordReq)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, updateUserPasswordResponse)
 }
 
 func NewUserServer(handler *handler.Handlers) IUser {

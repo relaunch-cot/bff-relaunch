@@ -8,6 +8,7 @@ import (
 type IUserGRPC interface {
 	CreateUser(ctx *context.Context, user *pb.CreateUserRequest) error
 	LoginUser(ctx *context.Context, in *pb.LoginUserRequest) (*pb.LoginUserResponse, error)
+	UpdateUserPassword(ctx *context.Context, in *pb.UpdateUserPasswordRequest) (*pb.UpdateUserPasswordResponse, error)
 }
 
 type resource struct {
@@ -30,6 +31,15 @@ func (r *resource) LoginUser(ctx *context.Context, in *pb.LoginUserRequest) (*pb
 	}
 
 	return loginUserResponse, nil
+}
+
+func (r *resource) UpdateUserPassword(ctx *context.Context, in *pb.UpdateUserPasswordRequest) (*pb.UpdateUserPasswordResponse, error) {
+	updateUserPasswordResponse, err := r.grpcClient.UpdateUserPassword(*ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return updateUserPasswordResponse, nil
 }
 
 func NewUserGrpcClient(grpcClient pb.UserServiceClient) IUserGRPC {

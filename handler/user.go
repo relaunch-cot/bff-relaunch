@@ -9,6 +9,7 @@ import (
 type IUser interface {
 	CreateUser(ctx *context.Context, in *pb.CreateUserRequest) error
 	LoginUser(ctx *context.Context, in *pb.LoginUserRequest) (*pb.LoginUserResponse, error)
+	UpdateUserPassword(ctx *context.Context, in *pb.UpdateUserPasswordRequest) (*pb.UpdateUserPasswordResponse, error)
 }
 
 type userResource struct {
@@ -31,6 +32,15 @@ func (r *userResource) LoginUser(ctx *context.Context, in *pb.LoginUserRequest) 
 	}
 
 	return loginUserResponse, nil
+}
+
+func (r *userResource) UpdateUserPassword(ctx *context.Context, in *pb.UpdateUserPasswordRequest) (*pb.UpdateUserPasswordResponse, error) {
+	updateUserPasswordResponse, err := r.grpc.UserGRPC.UpdateUserPassword(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return updateUserPasswordResponse, nil
 }
 
 func NewUserHandler(grpc *grpc.Grpc) IUser {

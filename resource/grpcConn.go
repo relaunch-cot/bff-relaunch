@@ -3,7 +3,7 @@ package resource
 import (
 	"crypto/tls"
 	"crypto/x509"
-	"github.com/relaunch-cot/bff/config"
+	"github.com/relaunch-cot/bff-relaunch/config"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"

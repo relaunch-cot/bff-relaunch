@@ -1,4 +1,4 @@
-module github.com/relaunch-cot/bff
+module github.com/relaunch-cot/bff-relaunch
 
 go 1.24.1
 

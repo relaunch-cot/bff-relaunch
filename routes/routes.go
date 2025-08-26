@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/relaunch-cot/bff/resource"
+	"github.com/relaunch-cot/bff-relaunch/resource"
 )
 
 func AddRoutes(r *gin.RouterGroup) {

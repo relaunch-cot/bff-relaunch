@@ -1,12 +1,12 @@
 package server
 
 import (
-	"github.com/relaunch-cot/bff/handler"
-	model "github.com/relaunch-cot/bff/model/user"
-	"github.com/relaunch-cot/bff/resource/transformer"
+	"github.com/relaunch-cot/bff-relaunch/handler"
+	model "github.com/relaunch-cot/bff-relaunch/model/user"
+	"github.com/relaunch-cot/bff-relaunch/resource/transformer"
 	"net/http"
 
-	params "github.com/relaunch-cot/bff/params/user"
+	params "github.com/relaunch-cot/bff-relaunch/params/user"
 
 	"github.com/gin-gonic/gin"
 )

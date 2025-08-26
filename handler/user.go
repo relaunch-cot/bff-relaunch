@@ -2,7 +2,7 @@ package handler
 
 import (
 	"context"
-	"github.com/relaunch-cot/bff/grpc"
+	"github.com/relaunch-cot/bff-relaunch/grpc"
 	pb "github.com/relaunch-cot/lib-relaunch-cot/proto/user"
 )
 

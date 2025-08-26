@@ -1,6 +1,6 @@
 package handler
 
-import "github.com/relaunch-cot/bff/grpc"
+import "github.com/relaunch-cot/bff-relaunch/grpc"
 
 type Handlers struct {
 	User IUser

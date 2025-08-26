@@ -1,7 +1,7 @@
 package server
 
 import (
-	"github.com/relaunch-cot/bff/handler"
+	"github.com/relaunch-cot/bff-relaunch/handler"
 )
 
 type Servers struct {

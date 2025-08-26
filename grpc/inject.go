@@ -1,7 +1,7 @@
 package grpc
 
 import (
-	"github.com/relaunch-cot/bff/grpc/user"
+	"github.com/relaunch-cot/bff-relaunch/grpc/user"
 	pb "github.com/relaunch-cot/lib-relaunch-cot/proto/user"
 )
 

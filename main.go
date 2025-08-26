@@ -3,9 +3,9 @@ package main
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/relaunch-cot/bff/config"
-	"github.com/relaunch-cot/bff/resource"
-	"github.com/relaunch-cot/bff/routes"
+	"github.com/relaunch-cot/bff-relaunch/config"
+	"github.com/relaunch-cot/bff-relaunch/resource"
+	"github.com/relaunch-cot/bff-relaunch/routes"
 )
 
 func main() {

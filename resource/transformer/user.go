@@ -1,7 +1,7 @@
 package transformer
 
 import (
-	model "github.com/relaunch-cot/bff/model/user"
+	model "github.com/relaunch-cot/bff-relaunch/model/user"
 	pb "github.com/relaunch-cot/lib-relaunch-cot/proto/user"
 )
 

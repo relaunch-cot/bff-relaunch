@@ -1,11 +1,11 @@
 package transformer
 
 import (
-	model "github.com/relaunch-cot/bff-relaunch/model/user"
+	models "github.com/relaunch-cot/bff-relaunch/models/user"
 	pb "github.com/relaunch-cot/lib-relaunch-cot/proto/user"
 )
 
-func CreateUserToProto(in *model.User) (*pb.CreateUserRequest, error) {
+func CreateUserToProto(in *models.User) (*pb.CreateUserRequest, error) {
 	return &pb.CreateUserRequest{
 		Name:     in.Name,
 		Email:    in.Email,
@@ -13,7 +13,7 @@ func CreateUserToProto(in *model.User) (*pb.CreateUserRequest, error) {
 	}, nil
 }
 
-func LoginUserToProto(in *model.User) (*pb.LoginUserRequest, error) {
+func LoginUserToProto(in *models.User) (*pb.LoginUserRequest, error) {
 	return &pb.LoginUserRequest{
 		Email:    in.Email,
 		Password: in.Password,

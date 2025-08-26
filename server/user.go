@@ -2,7 +2,7 @@ package server
 
 import (
 	"github.com/relaunch-cot/bff-relaunch/handler"
-	model "github.com/relaunch-cot/bff-relaunch/model/user"
+	models "github.com/relaunch-cot/bff-relaunch/models/user"
 	"github.com/relaunch-cot/bff-relaunch/resource/transformer"
 	"net/http"
 
@@ -24,7 +24,7 @@ func (r *resource) CreateUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "error getting query params"})
 	}
 
-	user := &model.User{
+	user := &models.User{
 		Name:     in.Name,
 		Email:    in.Email,
 		Password: in.Password,
@@ -53,7 +53,7 @@ func (r *resource) LoginUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "error getting query params"})
 	}
 
-	user := &model.User{
+	user := &models.User{
 		Email:    in.Email,
 		Password: in.Password,
 	}

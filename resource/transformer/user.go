@@ -2,6 +2,7 @@ package transformer
 
 import (
 	models "github.com/relaunch-cot/bff-relaunch/models/user"
+	pbBaseModels "github.com/relaunch-cot/lib-relaunch-cot/proto/base_models"
 	pb "github.com/relaunch-cot/lib-relaunch-cot/proto/user"
 )
 
@@ -20,10 +21,16 @@ func LoginUserToProto(in *models.User) (*pb.LoginUserRequest, error) {
 	}, nil
 }
 
-func UpdateUserPasswordToProto(email, currentPassword, newPassword string) (*pb.UpdateUserPasswordRequest, error) {
-	return &pb.UpdateUserPasswordRequest{
-		Email:           email,
-		CurrentPassword: currentPassword,
-		NewPassword:     newPassword,
+func UpdateUserToProto(in *models.User) (*pb.UpdateUserRequest, error) {
+	baseUser := &pbBaseModels.User{
+		UserId: in.UserId,
+		Name:   in.Name,
+		Email:  in.Email,
+	}
+
+	return &pb.UpdateUserRequest{
+		Email:       in.Email,
+		CurrentUser: baseUser,
+		NewUser:     baseUser,
 	}, nil
 }

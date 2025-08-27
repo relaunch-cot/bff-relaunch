@@ -1,10 +1,11 @@
 package server
 
 import (
+	"net/http"
+
 	"github.com/relaunch-cot/bff-relaunch/handler"
 	models "github.com/relaunch-cot/bff-relaunch/models/user"
 	"github.com/relaunch-cot/bff-relaunch/resource/transformer"
-	"net/http"
 
 	params "github.com/relaunch-cot/bff-relaunch/params/user"
 
@@ -81,7 +82,12 @@ func (r *resource) UpdateUserPassword(c *gin.Context) {
 		return
 	}
 
-	updateUserPasswordReq, err := transformer.UpdateUserPasswordToProto(in.Email, in.CurrentPassword, in.NewPassword)
+	user := &models.User{
+		Email:    in.Email,
+		Password: in.CurrentUser,
+	}
+
+	updateUserPasswordReq, err := transformer.UpdateUserToProto(user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
 	}

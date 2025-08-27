@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+
 	"github.com/relaunch-cot/bff-relaunch/grpc"
 	pb "github.com/relaunch-cot/lib-relaunch-cot/proto/user"
 )
@@ -9,7 +10,7 @@ import (
 type IUser interface {
 	CreateUser(ctx *context.Context, in *pb.CreateUserRequest) error
 	LoginUser(ctx *context.Context, in *pb.LoginUserRequest) (*pb.LoginUserResponse, error)
-	UpdateUserPassword(ctx *context.Context, in *pb.UpdateUserPasswordRequest) error
+	UpdateUserPassword(ctx *context.Context, in *pb.UpdateUserRequest) error
 }
 
 type userResource struct {
@@ -34,7 +35,7 @@ func (r *userResource) LoginUser(ctx *context.Context, in *pb.LoginUserRequest) 
 	return loginUserResponse, nil
 }
 
-func (r *userResource) UpdateUserPassword(ctx *context.Context, in *pb.UpdateUserPasswordRequest) error {
+func (r *userResource) UpdateUserPassword(ctx *context.Context, in *pb.UpdateUserRequest) error {
 	err := r.grpc.UserGRPC.UpdateUserPassword(ctx, in)
 	if err != nil {
 		return err

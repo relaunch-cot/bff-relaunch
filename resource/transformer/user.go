@@ -34,3 +34,17 @@ func UpdateUserToProto(in *models.User) (*pb.UpdateUserRequest, error) {
 		NewUser:     baseUser,
 	}, nil
 }
+
+func UpdateUserDataToProto(in *models.User) (*pb.UpdateUserRequest, error) {
+	baseUser := &pbBaseModels.User{
+		UserId: in.UserId,
+		Name:   in.Name,
+		Email:  in.Email,
+	}
+
+	return &pb.UpdateUserRequest{
+		Email:       in.Email,
+		CurrentUser: baseUser,
+		NewUser:     baseUser,
+	}, nil
+}

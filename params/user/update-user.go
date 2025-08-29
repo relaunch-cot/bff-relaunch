@@ -1,7 +1,7 @@
 package user
 
 type UpdateUserPasswordPATCH struct {
-	Email       string `json:"email" form:"email"`
-	CurrentUser string `json:"currentUser" form:"currentUser"`
-	NewUser     string `json:"newUser" form:"newUser"`
+	Email           string `json:"email" form:"email"`
+	CurrentPassword string `json:"currentPassword" form:"currentPassword"`
+	NewPassword     string `json:"newPassword" form:"newPassword"`
 }

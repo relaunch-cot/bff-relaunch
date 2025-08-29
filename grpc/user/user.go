@@ -10,7 +10,7 @@ type IUserGRPC interface {
 	CreateUser(ctx *context.Context, user *pb.CreateUserRequest) error
 	LoginUser(ctx *context.Context, in *pb.LoginUserRequest) (*pb.LoginUserResponse, error)
 	UpdateUser(ctx *context.Context, in *pb.UpdateUserRequest) error
-	UpdateUserPassword(ctx *context.Context, in *pb.UpdateUserRequest) error
+	UpdateUserPassword(ctx *context.Context, in *pb.UpdateUserPasswordRequest) error
 }
 
 type resource struct {
@@ -44,8 +44,8 @@ func (r *resource) UpdateUser(ctx *context.Context, in *pb.UpdateUserRequest) er
 	return nil
 }
 
-func (r *resource) UpdateUserPassword(ctx *context.Context, in *pb.UpdateUserRequest) error {
-	_, err := r.grpcClient.UpdateUser(*ctx, in)
+func (r *resource) UpdateUserPassword(ctx *context.Context, in *pb.UpdateUserPasswordRequest) error {
+	_, err := r.grpcClient.UpdateUserPassword(*ctx, in)
 	if err != nil {
 		return err
 	}

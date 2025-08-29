@@ -104,7 +104,7 @@ func (r *resource) UpdateUser(c *gin.Context) {
 		Email:  in.Email,
 	}
 
-	updateUserReq, err := transformer.UpdateUserDataToProto(user)
+	updateUserReq, err := transformer.UpdateUserToProto(user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
 		return
@@ -128,12 +128,7 @@ func (r *resource) UpdateUserPassword(c *gin.Context) {
 		return
 	}
 
-	user := &models.User{
-		Email:    in.Email,
-		Password: in.CurrentUser,
-	}
-
-	updateUserPasswordReq, err := transformer.UpdateUserToProto(user)
+	updateUserPasswordReq, err := transformer.UpdateUserPasswordToProto(in.Email, in.CurrentPassword, in.NewPassword)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
 	}

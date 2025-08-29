@@ -13,7 +13,7 @@ var Handlers handler.Handlers
 var Grpc grpc.Grpc
 
 func Inject() {
-	openUserGrpcConnection := openGrpcClientConn(config.USER_MICROSEVICE_CONN, pbUser.NewUserServiceClient)
+	openUserGrpcConnection := openGrpcClientConn(config.USER_MICROSERVICE_CONN, pbUser.NewUserServiceClient)
 
 	Grpc.InjectUser(openUserGrpcConnection)
 

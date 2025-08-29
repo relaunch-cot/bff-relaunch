@@ -17,6 +17,6 @@
 - Setar as variaveis de ambiente:
   - PORT: (porta em que o bff vai rodar)
   - IS_INSECURE = true
-  - USER_MICROSEVICE_CONN: (url de conexão para o microserviço de user)
+  - USER_MICROSERVICE_CONN: (url de conexão para o microserviço de user)
 - Rodar 'go build main.go' no terminal
 - Rodar 'go run main.go' no terminal

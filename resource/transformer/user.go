@@ -21,16 +21,15 @@ func LoginUserToProto(in *models.User) (*pb.LoginUserRequest, error) {
 }
 
 func UpdateUserToProto(in *models.User) (*pb.UpdateUserRequest, error) {
-	baseUser := &pb.User{
-		UserId: in.UserId,
-		Name:   in.Name,
-		Email:  in.Email,
+	newUser := &pb.User{
+		Name:  in.Name,
+		Email: in.Email,
 	}
 
 	return &pb.UpdateUserRequest{
-		Email:       in.Email,
-		CurrentUser: baseUser,
-		NewUser:     baseUser,
+		UserId:   in.UserId,
+		Password: in.Password,
+		NewUser:  newUser,
 	}, nil
 }
 

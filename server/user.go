@@ -78,14 +78,12 @@ func (r *resource) LoginUser(c *gin.Context) {
 }
 
 func (r *resource) UpdateUser(c *gin.Context) {
-	// Captura o ID do usuário da URL
 	userIdStr := c.Param("id")
 	if userIdStr == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "user id is required"})
 		return
 	}
 
-	// Converte string para int64
 	userId, err := strconv.ParseInt(userIdStr, 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "invalid user id"})
@@ -100,9 +98,10 @@ func (r *resource) UpdateUser(c *gin.Context) {
 	}
 
 	user := &models.User{
-		UserId: userId,
-		Name:   in.Name,
-		Email:  in.Email,
+		UserId:   userId,
+		Name:     in.Name,
+		Email:    in.Email,
+		Password: in.Password,
 	}
 
 	updateUserReq, err := transformer.UpdateUserToProto(user)

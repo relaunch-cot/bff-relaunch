@@ -41,3 +41,10 @@ func UpdateUserPasswordToProto(email, currentPassword, newPassword string) (*pb.
 		NewPassword:     newPassword,
 	}, nil
 }
+
+func DeleteUserToProto(email, password string) (*pb.DeleteUserRequest, error) {
+	return &pb.DeleteUserRequest{
+		Email:    email,
+		Password: password,
+	}, nil
+}

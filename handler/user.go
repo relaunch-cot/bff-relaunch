@@ -12,6 +12,7 @@ type IUser interface {
 	LoginUser(ctx *context.Context, in *pb.LoginUserRequest) (*pb.LoginUserResponse, error)
 	UpdateUser(ctx *context.Context, in *pb.UpdateUserRequest) error
 	UpdateUserPassword(ctx *context.Context, in *pb.UpdateUserPasswordRequest) error
+	DeleteUser(ctx *context.Context, in *pb.DeleteUserRequest) error
 }
 
 type userResource struct {
@@ -47,6 +48,15 @@ func (r *userResource) UpdateUser(ctx *context.Context, in *pb.UpdateUserRequest
 
 func (r *userResource) UpdateUserPassword(ctx *context.Context, in *pb.UpdateUserPasswordRequest) error {
 	err := r.grpc.UserGRPC.UpdateUserPassword(ctx, in)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *userResource) DeleteUser(ctx *context.Context, in *pb.DeleteUserRequest) error {
+	err := r.grpc.UserGRPC.DeleteUser(ctx, in)
 	if err != nil {
 		return err
 	}

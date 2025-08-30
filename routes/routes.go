@@ -13,4 +13,5 @@ func AddRoutes(r *gin.RouterGroup) {
 	user.POST("/login", resource.Servers.User.LoginUser)
 	user.PUT("/:id", resource.Servers.User.UpdateUser)
 	user.PATCH("", resource.Servers.User.UpdateUserPassword)
+	user.DELETE("", resource.Servers.User.DeleteUser)
 }

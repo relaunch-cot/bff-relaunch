@@ -78,7 +78,8 @@ func (r *resource) LoginUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, loginUserResponse)
+	c.Header("Authorization", loginUserResponse.Token)
+	c.JSON(http.StatusOK, gin.H{"message": "user logged in successfully"})
 }
 
 func (r *resource) UpdateUser(c *gin.Context) {

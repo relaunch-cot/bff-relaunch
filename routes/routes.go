@@ -10,7 +10,7 @@ func AddRoutes(r *gin.RouterGroup) {
 
 	user := v1.Group("/user")
 	user.POST("/register", resource.Servers.User.CreateUser)
-	user.POST("/login", resource.Servers.User.LoginUser)
+	user.GET("/login", resource.Servers.User.LoginUser)
 	user.PUT("/:id", resource.Servers.User.UpdateUser)
 	user.PATCH("", resource.Servers.User.UpdateUserPassword)
 	user.DELETE("", resource.Servers.User.DeleteUser)

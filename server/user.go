@@ -26,6 +26,7 @@ func (r *resource) CreateUser(c *gin.Context) {
 	err := c.Bind(in)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "error getting query params"})
+		return
 	}
 
 	user := &models.User{
@@ -55,6 +56,7 @@ func (r *resource) LoginUser(c *gin.Context) {
 	err := c.Bind(in)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "error getting query params"})
+		return
 	}
 
 	user := &models.User{
@@ -65,6 +67,7 @@ func (r *resource) LoginUser(c *gin.Context) {
 	loginUserReq, err := transformer.LoginUserToProto(user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
 	}
 
 	ctx := c.Request.Context()
@@ -72,6 +75,7 @@ func (r *resource) LoginUser(c *gin.Context) {
 	loginUserResponse, err := r.handler.User.LoginUser(&ctx, loginUserReq)
 	if err != nil {
 		c.JSON(404, gin.H{"message": err.Error()})
+		return
 	}
 
 	c.JSON(http.StatusOK, loginUserResponse)

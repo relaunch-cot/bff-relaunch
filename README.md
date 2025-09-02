@@ -29,9 +29,9 @@
 - [x]  Permitir deletar usuário
 - [x]  Permitir atualizar email e nome
 - [ ]  O usuário deve poder personalizar as configurações do perfil
-- [ ]  Deve ser possível exportar relatórios em PDF.
+- [x]  Deve ser possível exportar relatórios em PDF.
 - [ ]  O freelancer define o tempo para o desenvolvimento da aplicação
 
 ### Frontend
-- [ ]  Usuário fazer logout da plataforma
+- [x]  Usuário fazer logout da plataforma
 - [ ]  O usuário deve conseguir selecionar o tema da plataforma

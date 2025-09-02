@@ -14,4 +14,8 @@ func AddRoutes(r *gin.RouterGroup) {
 	user.PUT("/:id", resource.Servers.User.UpdateUser)
 	user.PATCH("", resource.Servers.User.UpdateUserPassword)
 	user.DELETE("", resource.Servers.User.DeleteUser)
+
+	// Rota para geração de relatórios PDF
+	reports := v1.Group("/reports")
+	reports.POST("/generate-pdf", resource.Servers.User.GenerateReportPDF)
 }

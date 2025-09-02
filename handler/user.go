@@ -13,6 +13,7 @@ type IUser interface {
 	UpdateUser(ctx *context.Context, in *pb.UpdateUserRequest) error
 	UpdateUserPassword(ctx *context.Context, in *pb.UpdateUserPasswordRequest) error
 	DeleteUser(ctx *context.Context, in *pb.DeleteUserRequest) error
+	GenerateReportPDF(ctx *context.Context, in *pb.GenerateReportRequest) (*pb.GenerateReportResponse, error)
 }
 
 type userResource struct {
@@ -62,6 +63,15 @@ func (r *userResource) DeleteUser(ctx *context.Context, in *pb.DeleteUserRequest
 	}
 
 	return nil
+}
+
+func (r *userResource) GenerateReportPDF(ctx *context.Context, in *pb.GenerateReportRequest) (*pb.GenerateReportResponse, error) {
+	response, err := r.grpc.UserGRPC.GenerateReportFromJSON(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
 }
 
 func NewUserHandler(grpc *grpc.Grpc) IUser {

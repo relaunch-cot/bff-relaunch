@@ -19,6 +19,7 @@ type IUser interface {
 	UpdateUser(c *gin.Context)
 	UpdateUserPassword(c *gin.Context)
 	DeleteUser(c *gin.Context)
+	GenerateReportPDF(c *gin.Context)
 }
 
 func (r *resource) CreateUser(c *gin.Context) {
@@ -170,6 +171,54 @@ func (r *resource) DeleteUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "user deleted successfully"})
+}
+
+func (r *resource) GenerateReportPDF(c *gin.Context) {
+	in := new(params.GenerateReportPOST)
+	err := c.ShouldBindJSON(in)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error parsing JSON: " + err.Error()})
+		return
+	}
+
+	// Validar dados obrigatórios
+	if in.Title == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "title is required"})
+		return
+	}
+
+	if len(in.Headers) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "headers are required"})
+		return
+	}
+
+	reportData := &models.ReportData{
+		Title:    in.Title,
+		Subtitle: in.Subtitle,
+		Headers:  in.Headers,
+		Rows:     in.Rows,
+		Footer:   in.Footer,
+	}
+
+	generateReportReq, err := transformer.ReportDataToProto(reportData)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
+	}
+
+	ctx := c.Request.Context()
+	response, err := r.handler.User.GenerateReportPDF(&ctx, generateReportReq)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	// Retornar PDF para o cliente
+	c.Header("Content-Type", "application/pdf")
+	c.Header("Content-Disposition", "attachment; filename=relatorio.pdf")
+	c.Header("Content-Length", strconv.Itoa(len(response.PdfData)))
+
+	c.Data(http.StatusOK, "application/pdf", response.PdfData)
 }
 
 func NewUserServer(handler *handler.Handlers) IUser {

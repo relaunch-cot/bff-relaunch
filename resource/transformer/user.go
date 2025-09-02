@@ -1,6 +1,8 @@
 package transformer
 
 import (
+	"encoding/json"
+
 	models "github.com/relaunch-cot/bff-relaunch/models/user"
 	pb "github.com/relaunch-cot/lib-relaunch-cot/proto/user"
 )
@@ -45,5 +47,16 @@ func DeleteUserToProto(email, password string) (*pb.DeleteUserRequest, error) {
 	return &pb.DeleteUserRequest{
 		Email:    email,
 		Password: password,
+	}, nil
+}
+
+func ReportDataToProto(reportData *models.ReportData) (*pb.GenerateReportRequest, error) {
+	jsonBytes, err := json.Marshal(reportData)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.GenerateReportRequest{
+		JsonData: string(jsonBytes),
 	}, nil
 }

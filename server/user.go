@@ -80,6 +80,7 @@ func (r *resource) LoginUser(c *gin.Context) {
 	}
 
 	c.Header("Authorization", loginUserResponse.Token)
+	c.Header("Access-Control-Expose-Headers", "Authorization")
 	c.JSON(http.StatusOK, gin.H{"message": "user logged in successfully"})
 }
 

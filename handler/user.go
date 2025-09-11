@@ -14,6 +14,7 @@ type IUser interface {
 	UpdateUserPassword(ctx *context.Context, in *pb.UpdateUserPasswordRequest) error
 	DeleteUser(ctx *context.Context, in *pb.DeleteUserRequest) error
 	GenerateReportPDF(ctx *context.Context, in *pb.GenerateReportRequest) (*pb.GenerateReportResponse, error)
+	SendPasswordRecoveryEmail(ctx *context.Context, in *pb.SendPasswordRecoveryEmailRequest) error
 }
 
 type userResource struct {
@@ -72,6 +73,15 @@ func (r *userResource) GenerateReportPDF(ctx *context.Context, in *pb.GenerateRe
 	}
 
 	return response, nil
+}
+
+func (r *userResource) SendPasswordRecoveryEmail(ctx *context.Context, in *pb.SendPasswordRecoveryEmailRequest) error {
+	err := r.grpc.UserGRPC.SendPasswordRecoveryEmail(ctx, in)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func NewUserHandler(grpc *grpc.Grpc) IUser {

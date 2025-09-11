@@ -20,6 +20,7 @@ type IUser interface {
 	UpdateUserPassword(c *gin.Context)
 	DeleteUser(c *gin.Context)
 	GenerateReportPDF(c *gin.Context)
+	SendPasswordRecoveryEmail(c *gin.Context)
 }
 
 func (r *resource) CreateUser(c *gin.Context) {
@@ -182,7 +183,6 @@ func (r *resource) GenerateReportPDF(c *gin.Context) {
 		return
 	}
 
-	// Validar dados obrigatórios
 	if in.Title == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "title is required"})
 		return
@@ -214,12 +214,41 @@ func (r *resource) GenerateReportPDF(c *gin.Context) {
 		return
 	}
 
-	// Retornar PDF para o cliente
 	c.Header("Content-Type", "application/pdf")
 	c.Header("Content-Disposition", "attachment; filename=relatorio.pdf")
 	c.Header("Content-Length", strconv.Itoa(len(response.PdfData)))
 
 	c.Data(http.StatusOK, "application/pdf", response.PdfData)
+}
+
+func (r *resource) SendPasswordRecoveryEmail(c *gin.Context) {
+	authToken := c.GetHeader("Authorization")
+	if authToken == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "header Authorization is required"})
+		return
+	}
+
+	in := new(params.SendPasswordRecoveryEmailPOST)
+	err := c.Bind(in)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error getting query params"})
+		return
+	}
+
+	sendPasswordRecoveryEmailReq, err := transformer.SendPasswordRecoveryEmailToProto(in.Email, in.RecoveryLink)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
+	}
+
+	ctx := c.Request.Context()
+	err = r.handler.User.SendPasswordRecoveryEmail(&ctx, sendPasswordRecoveryEmailReq)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "password recovery email sent successfully"})
 }
 
 func NewUserServer(handler *handler.Handlers) IUser {

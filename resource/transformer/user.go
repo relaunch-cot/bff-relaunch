@@ -60,3 +60,10 @@ func ReportDataToProto(reportData *models.ReportData) (*pb.GenerateReportRequest
 		JsonData: string(jsonBytes),
 	}, nil
 }
+
+func SendPasswordRecoveryEmailToProto(email, recoveryLink string) (*pb.SendPasswordRecoveryEmailRequest, error) {
+	return &pb.SendPasswordRecoveryEmailRequest{
+		Email:        email,
+		RecoveryLink: recoveryLink,
+	}, nil
+}

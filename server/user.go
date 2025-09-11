@@ -222,12 +222,6 @@ func (r *resource) GenerateReportPDF(c *gin.Context) {
 }
 
 func (r *resource) SendPasswordRecoveryEmail(c *gin.Context) {
-	authToken := c.GetHeader("Authorization")
-	if authToken == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "header Authorization is required"})
-		return
-	}
-
 	in := new(params.SendPasswordRecoveryEmailPOST)
 	err := c.Bind(in)
 	if err != nil {

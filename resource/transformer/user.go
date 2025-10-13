@@ -35,11 +35,10 @@ func UpdateUserToProto(in *models.User) (*pb.UpdateUserRequest, error) {
 	}, nil
 }
 
-func UpdateUserPasswordToProto(email, currentPassword, newPassword string) (*pb.UpdateUserPasswordRequest, error) {
+func UpdateUserPasswordToProto(userId int64, newPassword string) (*pb.UpdateUserPasswordRequest, error) {
 	return &pb.UpdateUserPasswordRequest{
-		Email:           email,
-		CurrentPassword: currentPassword,
-		NewPassword:     newPassword,
+		UserId:      userId,
+		NewPassword: newPassword,
 	}, nil
 }
 

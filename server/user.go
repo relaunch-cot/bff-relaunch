@@ -25,7 +25,7 @@ type IUser interface {
 
 func (r *resource) CreateUser(c *gin.Context) {
 	in := new(params.CreateUserPOST)
-	err := c.Bind(in)
+	err := c.BindQuery(in)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "error getting query params"})
 		return
@@ -55,7 +55,7 @@ func (r *resource) CreateUser(c *gin.Context) {
 
 func (r *resource) LoginUser(c *gin.Context) {
 	in := new(params.LoginUserGET)
-	err := c.Bind(in)
+	err := c.BindQuery(in)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "error getting query params"})
 		return
@@ -132,11 +132,11 @@ func (r *resource) UpdateUserPassword(c *gin.Context) {
 	in := new(params.UpdateUserPasswordPATCH)
 	err := c.Bind(in)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "error getting query params"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error getting body of the request"})
 		return
 	}
 
-	updateUserPasswordReq, err := transformer.UpdateUserPasswordToProto(in.Email, in.CurrentPassword, in.NewPassword)
+	updateUserPasswordReq, err := transformer.UpdateUserPasswordToProto(in.UserId, in.NewPassword)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
 	}
@@ -153,7 +153,7 @@ func (r *resource) UpdateUserPassword(c *gin.Context) {
 
 func (r *resource) DeleteUser(c *gin.Context) {
 	in := new(params.DeleteUserDELETE)
-	err := c.Bind(in)
+	err := c.BindQuery(in)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "error getting query params"})
 		return

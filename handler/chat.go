@@ -11,6 +11,7 @@ type IChat interface {
 	CreateNewChat(ctx *context.Context, in *pb.CreateNewChatRequest) error
 	SendMessage(ctx *context.Context, in *pb.SendMessageRequest) error
 	GetAllMessagesFromChat(ctx *context.Context, in *pb.GetAllMessagesFromChatRequest) (*pb.GetAllMessagesFromChatResponse, error)
+	GetAllChatsFromUser(ctx *context.Context, in *pb.GetAllChatsFromUserRequest) (*pb.GetAllChatsFromUserResponse, error)
 }
 
 type chatResource struct {
@@ -37,6 +38,15 @@ func (r *chatResource) SendMessage(ctx *context.Context, in *pb.SendMessageReque
 
 func (r *chatResource) GetAllMessagesFromChat(ctx *context.Context, in *pb.GetAllMessagesFromChatRequest) (*pb.GetAllMessagesFromChatResponse, error) {
 	response, err := r.grpc.ChatGRPC.GetAllMessagesFromChat(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
+func (r *chatResource) GetAllChatsFromUser(ctx *context.Context, in *pb.GetAllChatsFromUserRequest) (*pb.GetAllChatsFromUserResponse, error) {
+	response, err := r.grpc.ChatGRPC.GetAllChatsFromUser(ctx, in)
 	if err != nil {
 		return nil, err
 	}

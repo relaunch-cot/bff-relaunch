@@ -20,3 +20,7 @@ func SendMessageToProto(chatId, senderId int64, messageContent string) (*pb.Send
 func GetAllMessagesFromChatToProto(chatId int64) (*pb.GetAllMessagesFromChatRequest, error) {
 	return &pb.GetAllMessagesFromChatRequest{ChatId: chatId}, nil
 }
+
+func GetAllChatsFromUserToProto(userId int64) (*pb.GetAllChatsFromUserRequest, error) {
+	return &pb.GetAllChatsFromUserRequest{UserId: userId}, nil
+}

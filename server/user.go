@@ -21,6 +21,7 @@ type IUser interface {
 	DeleteUser(c *gin.Context)
 	GenerateReportPDF(c *gin.Context)
 	SendPasswordRecoveryEmail(c *gin.Context)
+	CreateNewChat(c *gin.Context)
 }
 
 func (r *resource) CreateUser(c *gin.Context) {
@@ -50,7 +51,7 @@ func (r *resource) CreateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "user registered successfully"})
+	c.JSON(http.StatusCreated, gin.H{"message": "user registered successfully"})
 }
 
 func (r *resource) LoginUser(c *gin.Context) {
@@ -76,7 +77,7 @@ func (r *resource) LoginUser(c *gin.Context) {
 
 	loginUserResponse, err := r.handler.User.LoginUser(&ctx, loginUserReq)
 	if err != nil {
-		c.JSON(404, gin.H{"message": err.Error()})
+		c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		return
 	}
 
@@ -218,7 +219,7 @@ func (r *resource) GenerateReportPDF(c *gin.Context) {
 	c.Header("Content-Disposition", "attachment; filename=relatorio.pdf")
 	c.Header("Content-Length", strconv.Itoa(len(response.PdfData)))
 
-	c.Data(http.StatusOK, "application/pdf", response.PdfData)
+	c.Data(http.StatusCreated, "application/pdf", response.PdfData)
 }
 
 func (r *resource) SendPasswordRecoveryEmail(c *gin.Context) {
@@ -243,6 +244,35 @@ func (r *resource) SendPasswordRecoveryEmail(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "password recovery email sent successfully"})
+}
+
+func (r *resource) CreateNewChat(c *gin.Context) {
+	in := new(params.CreateNewChatPOST)
+	err := c.Bind(in)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error getting query params"})
+		return
+	}
+
+	if len(in.UserIds) < 2 || len(in.UserIds) > 2 {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "must be two userIds"})
+		return
+	}
+
+	createNewChatRequest, err := transformer.CreateNewChatToProto(in.UserIds, in.CreatedBy)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
+	}
+
+	ctx := c.Request.Context()
+	err = r.handler.User.CreateNewChat(&ctx, createNewChatRequest)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "chat created successfully"})
 }
 
 func NewUserServer(handler *handler.Handlers) IUser {

@@ -18,4 +18,7 @@ func AddRoutes(r *gin.RouterGroup) {
 
 	reports := v1.Group("/reports")
 	reports.POST("/generate-pdf", resource.Servers.User.GenerateReportPDF)
+
+	chat := v1.Group("/chat")
+	chat.POST("", resource.Servers.User.CreateNewChat)
 }

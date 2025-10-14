@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	models "github.com/relaunch-cot/bff-relaunch/models/user"
+	pbBaseModels "github.com/relaunch-cot/lib-relaunch-cot/proto/base_models"
 	pb "github.com/relaunch-cot/lib-relaunch-cot/proto/user"
 )
 
@@ -23,7 +24,7 @@ func LoginUserToProto(in *models.User) (*pb.LoginUserRequest, error) {
 }
 
 func UpdateUserToProto(in *models.User) (*pb.UpdateUserRequest, error) {
-	newUser := &pb.User{
+	newUser := &pbBaseModels.User{
 		Name:  in.Name,
 		Email: in.Email,
 	}
@@ -64,5 +65,12 @@ func SendPasswordRecoveryEmailToProto(email, recoveryLink string) (*pb.SendPassw
 	return &pb.SendPasswordRecoveryEmailRequest{
 		Email:        email,
 		RecoveryLink: recoveryLink,
+	}, nil
+}
+
+func CreateNewChatToProto(userIds []int64, createdBy int64) (*pb.CreateNewChatRequest, error) {
+	return &pb.CreateNewChatRequest{
+		UserIds:   userIds,
+		CreatedBy: createdBy,
 	}, nil
 }

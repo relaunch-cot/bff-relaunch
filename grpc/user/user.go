@@ -14,6 +14,7 @@ type IUserGRPC interface {
 	DeleteUser(ctx *context.Context, in *pb.DeleteUserRequest) error
 	GenerateReportFromJSON(ctx *context.Context, in *pb.GenerateReportRequest) (*pb.GenerateReportResponse, error)
 	SendPasswordRecoveryEmail(ctx *context.Context, in *pb.SendPasswordRecoveryEmailRequest) error
+	CreateNewChat(ctx *context.Context, in *pb.CreateNewChatRequest) error
 }
 
 type resource struct {
@@ -76,6 +77,15 @@ func (r *resource) GenerateReportFromJSON(ctx *context.Context, in *pb.GenerateR
 
 func (r *resource) SendPasswordRecoveryEmail(ctx *context.Context, in *pb.SendPasswordRecoveryEmailRequest) error {
 	_, err := r.grpcClient.SendPasswordRecoveryEmail(*ctx, in)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *resource) CreateNewChat(ctx *context.Context, in *pb.CreateNewChatRequest) error {
+	_, err := r.grpcClient.CreateNewChat(*ctx, in)
 	if err != nil {
 		return err
 	}

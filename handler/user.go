@@ -16,6 +16,7 @@ type IUser interface {
 	GenerateReportPDF(ctx *context.Context, in *pb.GenerateReportRequest) (*pb.GenerateReportResponse, error)
 	SendPasswordRecoveryEmail(ctx *context.Context, in *pb.SendPasswordRecoveryEmailRequest) error
 	CreateNewChat(ctx *context.Context, in *pb.CreateNewChatRequest) error
+	SendMessage(ctx *context.Context, in *pb.SendMessageRequest) error
 }
 
 type userResource struct {
@@ -87,6 +88,15 @@ func (r *userResource) SendPasswordRecoveryEmail(ctx *context.Context, in *pb.Se
 
 func (r *userResource) CreateNewChat(ctx *context.Context, in *pb.CreateNewChatRequest) error {
 	err := r.grpc.UserGRPC.CreateNewChat(ctx, in)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *userResource) SendMessage(ctx *context.Context, in *pb.SendMessageRequest) error {
+	err := r.grpc.UserGRPC.SendMessage(ctx, in)
 	if err != nil {
 		return err
 	}

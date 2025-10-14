@@ -22,6 +22,7 @@ type IUser interface {
 	GenerateReportPDF(c *gin.Context)
 	SendPasswordRecoveryEmail(c *gin.Context)
 	CreateNewChat(c *gin.Context)
+	SendMessage(c *gin.Context)
 }
 
 func (r *resource) CreateUser(c *gin.Context) {
@@ -273,6 +274,43 @@ func (r *resource) CreateNewChat(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"message": "chat created successfully"})
+}
+
+func (r *resource) SendMessage(c *gin.Context) {
+	senderId := c.Param("senderId")
+	if senderId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "the path param senderId is required"})
+		return
+	}
+
+	senderIdInt, err := strconv.Atoi(senderId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "senderId must be a integer number"})
+		return
+	}
+
+	in := new(params.SendMessagePOST)
+	err = c.Bind(in)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error getting query params"})
+		return
+	}
+
+	sendMessageRequest, err := transformer.SendMessageToProto(in.ChatId, int64(senderIdInt), in.MessageContent)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	err = r.handler.User.SendMessage(&ctx, sendMessageRequest)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "message sent successfully"})
 }
 
 func NewUserServer(handler *handler.Handlers) IUser {

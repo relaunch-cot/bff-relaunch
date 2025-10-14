@@ -74,3 +74,11 @@ func CreateNewChatToProto(userIds []int64, createdBy int64) (*pb.CreateNewChatRe
 		CreatedBy: createdBy,
 	}, nil
 }
+
+func SendMessageToProto(chatId, senderId int64, messageContent string) (*pb.SendMessageRequest, error) {
+	return &pb.SendMessageRequest{
+		ChatId:         chatId,
+		SenderId:       senderId,
+		MessageContent: messageContent,
+	}, nil
+}

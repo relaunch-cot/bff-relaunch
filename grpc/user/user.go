@@ -16,6 +16,7 @@ type IUserGRPC interface {
 	SendPasswordRecoveryEmail(ctx *context.Context, in *pb.SendPasswordRecoveryEmailRequest) error
 	CreateNewChat(ctx *context.Context, in *pb.CreateNewChatRequest) error
 	SendMessage(ctx *context.Context, in *pb.SendMessageRequest) error
+	GetAllMessagesFromChat(ctx *context.Context, in *pb.GetAllMessagesFromChatRequest) (*pb.GetAllMessagesFromChatResponse, error)
 }
 
 type resource struct {
@@ -101,6 +102,15 @@ func (r *resource) SendMessage(ctx *context.Context, in *pb.SendMessageRequest) 
 	}
 
 	return nil
+}
+
+func (r *resource) GetAllMessagesFromChat(ctx *context.Context, in *pb.GetAllMessagesFromChatRequest) (*pb.GetAllMessagesFromChatResponse, error) {
+	response, err := r.grpcClient.GetAllMessagesFromChat(*ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
 }
 
 func NewUserGrpcClient(grpcClient pb.UserServiceClient) IUserGRPC {

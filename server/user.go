@@ -23,6 +23,7 @@ type IUser interface {
 	SendPasswordRecoveryEmail(c *gin.Context)
 	CreateNewChat(c *gin.Context)
 	SendMessage(c *gin.Context)
+	GetAllMessagesFromChat(c *gin.Context)
 }
 
 func (r *resource) CreateUser(c *gin.Context) {
@@ -311,6 +312,36 @@ func (r *resource) SendMessage(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"message": "message sent successfully"})
+}
+
+func (r *resource) GetAllMessagesFromChat(c *gin.Context) {
+	chatId := c.Param("chatId")
+	if chatId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "the path param chatId is required"})
+		return
+	}
+
+	chatIdInt, err := strconv.Atoi(chatId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "chatId must be a integer number"})
+		return
+	}
+
+	getAllMessagesFromChatRequest, err := transformer.GetAllMessagesFromChatToProto(int64(chatIdInt))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	getAllMessagesFromChatResponse, err := r.handler.User.GetAllMessagesFromChat(&ctx, getAllMessagesFromChatRequest)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, getAllMessagesFromChatResponse)
 }
 
 func NewUserServer(handler *handler.Handlers) IUser {

@@ -1,4 +1,4 @@
-package user
+package chat
 
 type CreateNewChatPOST struct {
 	UserIds   []int64 `json:"userIds" form:"userIds,omitempty"`

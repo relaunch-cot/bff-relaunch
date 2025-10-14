@@ -14,9 +14,6 @@ type IUserGRPC interface {
 	DeleteUser(ctx *context.Context, in *pb.DeleteUserRequest) error
 	GenerateReportFromJSON(ctx *context.Context, in *pb.GenerateReportRequest) (*pb.GenerateReportResponse, error)
 	SendPasswordRecoveryEmail(ctx *context.Context, in *pb.SendPasswordRecoveryEmailRequest) error
-	CreateNewChat(ctx *context.Context, in *pb.CreateNewChatRequest) error
-	SendMessage(ctx *context.Context, in *pb.SendMessageRequest) error
-	GetAllMessagesFromChat(ctx *context.Context, in *pb.GetAllMessagesFromChatRequest) (*pb.GetAllMessagesFromChatResponse, error)
 }
 
 type resource struct {
@@ -84,33 +81,6 @@ func (r *resource) SendPasswordRecoveryEmail(ctx *context.Context, in *pb.SendPa
 	}
 
 	return nil
-}
-
-func (r *resource) CreateNewChat(ctx *context.Context, in *pb.CreateNewChatRequest) error {
-	_, err := r.grpcClient.CreateNewChat(*ctx, in)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (r *resource) SendMessage(ctx *context.Context, in *pb.SendMessageRequest) error {
-	_, err := r.grpcClient.SendMessage(*ctx, in)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (r *resource) GetAllMessagesFromChat(ctx *context.Context, in *pb.GetAllMessagesFromChatRequest) (*pb.GetAllMessagesFromChatResponse, error) {
-	response, err := r.grpcClient.GetAllMessagesFromChat(*ctx, in)
-	if err != nil {
-		return nil, err
-	}
-
-	return response, nil
 }
 
 func NewUserGrpcClient(grpcClient pb.UserServiceClient) IUserGRPC {

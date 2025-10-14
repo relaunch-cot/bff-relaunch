@@ -20,7 +20,7 @@ func AddRoutes(r *gin.RouterGroup) {
 	reports.POST("/generate-pdf", resource.Servers.User.GenerateReportPDF)
 
 	chat := v1.Group("/chat")
-	chat.POST("", resource.Servers.User.CreateNewChat)
-	chat.POST("send-message/:senderId", resource.Servers.User.SendMessage)
-	chat.GET("messages/:chatId", resource.Servers.User.GetAllMessagesFromChat)
+	chat.POST("", resource.Servers.Chat.CreateNewChat)
+	chat.POST("send-message/:senderId", resource.Servers.Chat.SendMessage)
+	chat.GET("messages/:chatId", resource.Servers.Chat.GetAllMessagesFromChat)
 }

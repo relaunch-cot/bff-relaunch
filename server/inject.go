@@ -6,6 +6,7 @@ import (
 
 type Servers struct {
 	User IUser
+	Chat IChat
 }
 
 type resource struct {
@@ -14,4 +15,5 @@ type resource struct {
 
 func (c *Servers) Inject(handler *handler.Handlers) {
 	c.User = NewUserServer(handler)
+	c.Chat = NewChatServer(handler)
 }

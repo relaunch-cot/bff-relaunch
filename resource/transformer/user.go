@@ -67,3 +67,9 @@ func SendPasswordRecoveryEmailToProto(email, recoveryLink string) (*pb.SendPassw
 		RecoveryLink: recoveryLink,
 	}, nil
 }
+
+func GetUserProfileToProto(userId int64) (*pb.GetUserProfileRequest, error) {
+	return &pb.GetUserProfileRequest{
+		UserId: userId,
+	}, nil
+}

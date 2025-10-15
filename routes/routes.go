@@ -15,6 +15,7 @@ func AddRoutes(r *gin.RouterGroup) {
 	user.PATCH("", resource.Servers.User.UpdateUserPassword)
 	user.DELETE("", resource.Servers.User.DeleteUser)
 	user.POST("/send-email", resource.Servers.User.SendPasswordRecoveryEmail)
+	user.GET("/:userId", resource.Servers.User.GetUserProfile)
 
 	reports := v1.Group("/reports")
 	reports.POST("/generate-pdf", resource.Servers.User.GenerateReportPDF)

@@ -21,6 +21,7 @@ type IUser interface {
 	DeleteUser(c *gin.Context)
 	GenerateReportPDF(c *gin.Context)
 	SendPasswordRecoveryEmail(c *gin.Context)
+	GetUserProfile(c *gin.Context)
 }
 
 func (r *resource) CreateUser(c *gin.Context) {
@@ -243,6 +244,42 @@ func (r *resource) SendPasswordRecoveryEmail(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "password recovery email sent successfully"})
+}
+
+func (r *resource) GetUserProfile(c *gin.Context) {
+	auth := c.GetHeader("Authorization")
+	if auth == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "the Authorization header is required"})
+		return
+	}
+
+	userId := c.Param("userId")
+	if userId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "userId is required"})
+		return
+	}
+
+	userIdInt, err := strconv.ParseInt(userId, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "userId must be a integer number"})
+		return
+	}
+
+	getUserProfileRequest, err := transformer.GetUserProfileToProto(userIdInt)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	userProfile, err := r.handler.User.GetUserProfile(&ctx, getUserProfileRequest)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, userProfile)
 }
 
 func NewUserServer(handler *handler.Handlers) IUser {

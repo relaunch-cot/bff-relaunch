@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/relaunch-cot/bff-relaunch/handler"
-	models "github.com/relaunch-cot/bff-relaunch/models/user"
 	"github.com/relaunch-cot/bff-relaunch/resource/transformer"
+	libModels "github.com/relaunch-cot/lib-relaunch-cot/models"
 
 	params "github.com/relaunch-cot/bff-relaunch/params/user"
 
@@ -32,10 +32,10 @@ func (r *resource) CreateUser(c *gin.Context) {
 		return
 	}
 
-	user := &models.User{
-		Name:     in.Name,
-		Email:    in.Email,
-		Password: in.Password,
+	user := &libModels.User{
+		Name:           in.Name,
+		Email:          in.Email,
+		HashedPassword: in.Password,
 	}
 
 	createUserReq, err := transformer.CreateUserToProto(user)
@@ -62,9 +62,9 @@ func (r *resource) LoginUser(c *gin.Context) {
 		return
 	}
 
-	user := &models.User{
-		Email:    in.Email,
-		Password: in.Password,
+	user := &libModels.User{
+		Email:          in.Email,
+		HashedPassword: in.Password,
 	}
 
 	loginUserReq, err := transformer.LoginUserToProto(user)
@@ -106,11 +106,11 @@ func (r *resource) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	user := &models.User{
-		UserId:   userId,
-		Name:     in.Name,
-		Email:    in.Email,
-		Password: in.Password,
+	user := &libModels.User{
+		UserId:         userId,
+		Name:           in.Name,
+		Email:          in.Email,
+		HashedPassword: in.Password,
 	}
 
 	updateUserReq, err := transformer.UpdateUserToProto(user)
@@ -194,7 +194,7 @@ func (r *resource) GenerateReportPDF(c *gin.Context) {
 		return
 	}
 
-	reportData := &models.ReportData{
+	reportData := &libModels.ReportData{
 		Title:    in.Title,
 		Subtitle: in.Subtitle,
 		Headers:  in.Headers,

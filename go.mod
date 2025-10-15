@@ -5,7 +5,7 @@ go 1.24.1
 require (
 	github.com/gin-contrib/cors v1.7.5
 	github.com/gin-gonic/gin v1.10.1
-	github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251015013529-f2424b563661
+	github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251015180931-bc16265d9f6d
 	google.golang.org/grpc v1.73.0
 )
 

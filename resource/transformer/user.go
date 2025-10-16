@@ -32,9 +32,19 @@ func LoginUserToProto(in *libModels.User) (*pb.LoginUserRequest, error) {
 }
 
 func UpdateUserToProto(in *libModels.User) (*pb.UpdateUserRequest, error) {
+	baseModelsSettings := pbBaseModels.UserSettings{
+		Phone:       in.Settings.Phone,
+		Cpf:         in.Settings.Cpf,
+		DateOfBirth: in.Settings.DateOfBirth,
+		Biography:   in.Settings.Biography,
+		Skills:      in.Settings.Skills,
+	}
+
 	newUser := &pbBaseModels.User{
-		Name:  in.Name,
-		Email: in.Email,
+		UserId:   in.UserId,
+		Name:     in.Name,
+		Email:    in.Email,
+		Settings: &baseModelsSettings,
 	}
 
 	return &pb.UpdateUserRequest{

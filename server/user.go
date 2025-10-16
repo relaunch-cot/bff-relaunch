@@ -96,7 +96,7 @@ func (r *resource) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	user := params.GetUserModelFromUpdate(in)
+	user := params.GetUserModelFromUpdate(in, userId)
 
 	updateUserReq, err := transformer.UpdateUserToProto(user)
 	if err != nil {

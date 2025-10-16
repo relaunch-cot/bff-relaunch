@@ -13,17 +13,19 @@ type UpdateUserPUT struct {
 	Type     string              `json:"type" form:"type"`
 }
 
-func GetUserModelFromUpdate(in *UpdateUserPUT) *libModels.User {
+func GetUserModelFromUpdate(in *UpdateUserPUT, userId string) *libModels.User {
 	settings := libModels.UserSettings{
 		Phone:       in.Settings.Phone,
 		Cpf:         in.Settings.Cpf,
 		DateOfBirth: in.Settings.DateOfBirth,
+		Biography:   in.Settings.Biography,
+		Skills:      in.Settings.Skills,
 	}
 
 	return &libModels.User{
+		UserId:   userId,
 		Name:     in.Name,
 		Email:    in.Email,
-		Password: in.Password,
 		Settings: settings,
 		Type:     in.Type,
 	}

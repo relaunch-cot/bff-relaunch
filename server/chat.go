@@ -7,6 +7,7 @@ import (
 	"github.com/relaunch-cot/bff-relaunch/handler"
 	params "github.com/relaunch-cot/bff-relaunch/params/chat"
 	"github.com/relaunch-cot/bff-relaunch/resource/transformer"
+	"github.com/relaunch-cot/lib-relaunch-cot/pkg/httpresponse"
 )
 
 type IChat interface {
@@ -38,7 +39,7 @@ func (r *resource) CreateNewChat(c *gin.Context) {
 	ctx := c.Request.Context()
 	err = r.handler.Chat.CreateNewChat(&ctx, createNewChatRequest)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
 		return
 	}
 
@@ -69,7 +70,7 @@ func (r *resource) SendMessage(c *gin.Context) {
 
 	err = r.handler.Chat.SendMessage(&ctx, sendMessageRequest)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
 		return
 	}
 
@@ -93,7 +94,7 @@ func (r *resource) GetAllMessagesFromChat(c *gin.Context) {
 
 	getAllMessagesFromChatResponse, err := r.handler.Chat.GetAllMessagesFromChat(&ctx, getAllMessagesFromChatRequest)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
 		return
 	}
 
@@ -117,7 +118,7 @@ func (r *resource) GetAllChatsFromUser(c *gin.Context) {
 
 	getAllChatsFromUserResponse, err := r.handler.Chat.GetAllChatsFromUser(&ctx, getAllChatsFromUserRequest)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
 		return
 	}
 

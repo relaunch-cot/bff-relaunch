@@ -7,6 +7,7 @@ import (
 	"github.com/relaunch-cot/bff-relaunch/handler"
 	"github.com/relaunch-cot/bff-relaunch/resource/transformer"
 	libModels "github.com/relaunch-cot/lib-relaunch-cot/models"
+	"github.com/relaunch-cot/lib-relaunch-cot/pkg/httpresponse"
 
 	params "github.com/relaunch-cot/bff-relaunch/params/user"
 
@@ -37,13 +38,14 @@ func (r *resource) CreateUser(c *gin.Context) {
 	createUserReq, err := transformer.CreateUserToProto(user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
 	}
 
 	ctx := c.Request.Context()
 
 	err = r.handler.User.CreateUser(&ctx, createUserReq)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
 		return
 	}
 
@@ -73,7 +75,7 @@ func (r *resource) LoginUser(c *gin.Context) {
 
 	loginUserResponse, err := r.handler.User.LoginUser(&ctx, loginUserReq)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
 		return
 	}
 
@@ -107,7 +109,7 @@ func (r *resource) UpdateUser(c *gin.Context) {
 	ctx := c.Request.Context()
 	err = r.handler.User.UpdateUser(&ctx, updateUserReq)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
 		return
 	}
 
@@ -125,12 +127,13 @@ func (r *resource) UpdateUserPassword(c *gin.Context) {
 	updateUserPasswordReq, err := transformer.UpdateUserPasswordToProto(in.UserId, in.NewPassword)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
 	}
 
 	ctx := c.Request.Context()
 	err = r.handler.User.UpdateUserPassword(&ctx, updateUserPasswordReq)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
 		return
 	}
 
@@ -154,7 +157,7 @@ func (r *resource) DeleteUser(c *gin.Context) {
 	ctx := c.Request.Context()
 	err = r.handler.User.DeleteUser(&ctx, deleteUserReq)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
 		return
 	}
 
@@ -196,7 +199,7 @@ func (r *resource) GenerateReportPDF(c *gin.Context) {
 	ctx := c.Request.Context()
 	response, err := r.handler.User.GenerateReportPDF(&ctx, generateReportReq)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
 		return
 	}
 
@@ -224,7 +227,7 @@ func (r *resource) SendPasswordRecoveryEmail(c *gin.Context) {
 	ctx := c.Request.Context()
 	err = r.handler.User.SendPasswordRecoveryEmail(&ctx, sendPasswordRecoveryEmailReq)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
 		return
 	}
 
@@ -254,7 +257,7 @@ func (r *resource) GetUserProfile(c *gin.Context) {
 
 	userProfile, err := r.handler.User.GetUserProfile(&ctx, getUserProfileRequest)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
 		return
 	}
 

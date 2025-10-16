@@ -1,6 +1,6 @@
 package user
 
 type UpdateUserPasswordPATCH struct {
-	UserId      int64  `json:"userId"`
+	UserId      string `json:"userId"`
 	NewPassword string `json:"newPassword"`
 }

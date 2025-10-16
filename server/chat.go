@@ -2,7 +2,6 @@ package server
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/relaunch-cot/bff-relaunch/handler"
@@ -53,20 +52,14 @@ func (r *resource) SendMessage(c *gin.Context) {
 		return
 	}
 
-	senderIdInt, err := strconv.Atoi(senderId)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "senderId must be a integer number"})
-		return
-	}
-
 	in := new(params.SendMessagePOST)
-	err = c.Bind(in)
+	err := c.Bind(in)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "error getting query params"})
 		return
 	}
 
-	sendMessageRequest, err := transformer.SendMessageToProto(in.ChatId, int64(senderIdInt), in.MessageContent)
+	sendMessageRequest, err := transformer.SendMessageToProto(in.ChatId, senderId, in.MessageContent)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
 		return
@@ -90,13 +83,7 @@ func (r *resource) GetAllMessagesFromChat(c *gin.Context) {
 		return
 	}
 
-	chatIdInt, err := strconv.Atoi(chatId)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "chatId must be a integer number"})
-		return
-	}
-
-	getAllMessagesFromChatRequest, err := transformer.GetAllMessagesFromChatToProto(int64(chatIdInt))
+	getAllMessagesFromChatRequest, err := transformer.GetAllMessagesFromChatToProto(chatId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
 		return
@@ -120,13 +107,7 @@ func (r *resource) GetAllChatsFromUser(c *gin.Context) {
 		return
 	}
 
-	userIdInt, err := strconv.Atoi(userId)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "userId must be a integer number"})
-		return
-	}
-
-	getAllChatsFromUserRequest, err := transformer.GetAllChatsFromUserToProto(int64(userIdInt))
+	getAllChatsFromUserRequest, err := transformer.GetAllChatsFromUserToProto(userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
 		return

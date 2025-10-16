@@ -1,6 +1,6 @@
 package chat
 
 type CreateNewChatPOST struct {
-	UserIds   []int64 `json:"userIds" form:"userIds,omitempty"`
-	CreatedBy int64   `json:"createdBy" form:"createdBy,omitempty"`
+	UserIds   []string `json:"userIds" form:"userIds,omitempty"`
+	CreatedBy string   `json:"createdBy" form:"createdBy,omitempty"`
 }

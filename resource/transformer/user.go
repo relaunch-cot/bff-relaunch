@@ -3,27 +3,35 @@ package transformer
 import (
 	"encoding/json"
 
-	models "github.com/relaunch-cot/bff-relaunch/models/user"
+	libModels "github.com/relaunch-cot/lib-relaunch-cot/models"
 	pbBaseModels "github.com/relaunch-cot/lib-relaunch-cot/proto/base_models"
 	pb "github.com/relaunch-cot/lib-relaunch-cot/proto/user"
 )
 
-func CreateUserToProto(in *models.User) (*pb.CreateUserRequest, error) {
+func CreateUserToProto(in *libModels.User) (*pb.CreateUserRequest, error) {
+	settings := &pbBaseModels.UserSettings{
+		Phone:       in.Settings.Phone,
+		Cpf:         in.Settings.Cpf,
+		DateOfBirth: in.Settings.DateOfBirth,
+	}
+
 	return &pb.CreateUserRequest{
 		Name:     in.Name,
 		Email:    in.Email,
 		Password: in.Password,
+		Settings: settings,
+		Type:     in.Type,
 	}, nil
 }
 
-func LoginUserToProto(in *models.User) (*pb.LoginUserRequest, error) {
+func LoginUserToProto(in *libModels.User) (*pb.LoginUserRequest, error) {
 	return &pb.LoginUserRequest{
 		Email:    in.Email,
 		Password: in.Password,
 	}, nil
 }
 
-func UpdateUserToProto(in *models.User) (*pb.UpdateUserRequest, error) {
+func UpdateUserToProto(in *libModels.User) (*pb.UpdateUserRequest, error) {
 	newUser := &pbBaseModels.User{
 		Name:  in.Name,
 		Email: in.Email,
@@ -36,7 +44,7 @@ func UpdateUserToProto(in *models.User) (*pb.UpdateUserRequest, error) {
 	}, nil
 }
 
-func UpdateUserPasswordToProto(userId int64, newPassword string) (*pb.UpdateUserPasswordRequest, error) {
+func UpdateUserPasswordToProto(userId, newPassword string) (*pb.UpdateUserPasswordRequest, error) {
 	return &pb.UpdateUserPasswordRequest{
 		UserId:      userId,
 		NewPassword: newPassword,
@@ -50,7 +58,7 @@ func DeleteUserToProto(email, password string) (*pb.DeleteUserRequest, error) {
 	}, nil
 }
 
-func ReportDataToProto(reportData *models.ReportData) (*pb.GenerateReportRequest, error) {
+func ReportDataToProto(reportData *libModels.ReportData) (*pb.GenerateReportRequest, error) {
 	jsonBytes, err := json.Marshal(reportData)
 	if err != nil {
 		return nil, err
@@ -68,7 +76,7 @@ func SendPasswordRecoveryEmailToProto(email, recoveryLink string) (*pb.SendPassw
 	}, nil
 }
 
-func GetUserProfileToProto(userId int64) (*pb.GetUserProfileRequest, error) {
+func GetUserProfileToProto(userId string) (*pb.GetUserProfileRequest, error) {
 	return &pb.GetUserProfileRequest{
 		UserId: userId,
 	}, nil

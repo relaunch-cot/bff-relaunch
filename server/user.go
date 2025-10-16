@@ -26,17 +26,13 @@ type IUser interface {
 
 func (r *resource) CreateUser(c *gin.Context) {
 	in := new(params.CreateUserPOST)
-	err := c.BindQuery(in)
+	err := c.Bind(in)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "error getting query params"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error getting body of the request"})
 		return
 	}
 
-	user := &libModels.User{
-		Name:           in.Name,
-		Email:          in.Email,
-		HashedPassword: in.Password,
-	}
+	user := params.GetUserModelFromCreate(in)
 
 	createUserReq, err := transformer.CreateUserToProto(user)
 	if err != nil {
@@ -56,15 +52,15 @@ func (r *resource) CreateUser(c *gin.Context) {
 
 func (r *resource) LoginUser(c *gin.Context) {
 	in := new(params.LoginUserGET)
-	err := c.BindQuery(in)
+	err := c.Bind(in)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "error getting query params"})
 		return
 	}
 
 	user := &libModels.User{
-		Email:          in.Email,
-		HashedPassword: in.Password,
+		Email:    in.Email,
+		Password: in.Password,
 	}
 
 	loginUserReq, err := transformer.LoginUserToProto(user)
@@ -87,31 +83,20 @@ func (r *resource) LoginUser(c *gin.Context) {
 }
 
 func (r *resource) UpdateUser(c *gin.Context) {
-	userIdStr := c.Param("id")
-	if userIdStr == "" {
+	userId := c.Param("id")
+	if userId == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "user id is required"})
 		return
 	}
 
-	userId, err := strconv.ParseInt(userIdStr, 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "invalid user id"})
-		return
-	}
-
 	in := new(params.UpdateUserPUT)
-	err = c.Bind(in)
+	err := c.Bind(in)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "error getting query params"})
 		return
 	}
 
-	user := &libModels.User{
-		UserId:         userId,
-		Name:           in.Name,
-		Email:          in.Email,
-		HashedPassword: in.Password,
-	}
+	user := params.GetUserModelFromUpdate(in)
 
 	updateUserReq, err := transformer.UpdateUserToProto(user)
 	if err != nil {
@@ -259,13 +244,7 @@ func (r *resource) GetUserProfile(c *gin.Context) {
 		return
 	}
 
-	userIdInt, err := strconv.ParseInt(userId, 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "userId must be a integer number"})
-		return
-	}
-
-	getUserProfileRequest, err := transformer.GetUserProfileToProto(userIdInt)
+	getUserProfileRequest, err := transformer.GetUserProfileToProto(userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
 		return

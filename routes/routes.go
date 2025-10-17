@@ -25,4 +25,7 @@ func AddRoutes(r *gin.RouterGroup) {
 	chat.POST("send-message/:senderId", resource.Servers.Chat.SendMessage)
 	chat.GET("messages/:chatId", resource.Servers.Chat.GetAllMessagesFromChat)
 	chat.GET("/:userId", resource.Servers.Chat.GetAllChatsFromUser)
+
+	project := v1.Group("/project")
+	project.POST("/:userId", resource.Servers.Project.CreateProject)
 }

@@ -68,6 +68,8 @@ github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251015220556-784b421581b7 h1:k
 github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251015220556-784b421581b7/go.mod h1:AnBqPVRdO0Fr/Cscv1OszBA5hDJCM4LylAvj39riXws=
 github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251016202713-1f2d55efc159 h1:yF42WBml1xZz0i9htWW5WNZo824BklK5cSyODaEBUmk=
 github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251016202713-1f2d55efc159/go.mod h1:AnBqPVRdO0Fr/Cscv1OszBA5hDJCM4LylAvj39riXws=
+github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251017153833-a7754f538f49 h1:zAjoXMTL7Gz/gLMhlAFx18WxHHrTjnKnf/dvNhswi/8=
+github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251017153833-a7754f538f49/go.mod h1:AnBqPVRdO0Fr/Cscv1OszBA5hDJCM4LylAvj39riXws=
 github.com/rogpeppe/go-internal v1.8.0 h1:FCbCCtXNOY3UtUuHUYaghJg4y7Fd14rXifAYUAtL9R8=
 github.com/rogpeppe/go-internal v1.8.0/go.mod h1:WmiCO8CzOY8rg0OYDC4/i/2WRWAB6poM+XZ2dLUbcbE=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=

@@ -1,0 +1,56 @@
+package server
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/relaunch-cot/bff-relaunch/handler"
+	params "github.com/relaunch-cot/bff-relaunch/params/project"
+	"github.com/relaunch-cot/bff-relaunch/resource/transformer"
+)
+
+type IProject interface {
+	CreateProject(c *gin.Context)
+}
+
+func (r *resource) CreateProject(c *gin.Context) {
+	auth := c.GetHeader("Authorization")
+	if auth == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "the Authorization header is required"})
+		return
+	}
+
+	userId := c.Param("userId")
+	if userId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "userId is required"})
+		return
+	}
+
+	in := new(params.CreateProjectPOST)
+	if err := c.Bind(in); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error getting body of the request"})
+		return
+	}
+
+	createProjectRequest, err := transformer.CreateProjectToProto(userId, in.DeveloperId, in.Category, in.ProjectDeliveryDeadline.Format("2006-01-02 15:04:05"), in.Amount)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	err = r.handler.Project.CreateProject(&ctx, createProjectRequest)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "project created"})
+}
+
+func NewProjectServer(handler *handler.Handlers) IProject {
+	return &resource{
+		handler: handler,
+	}
+}

@@ -9,6 +9,7 @@ import (
 
 type IProject interface {
 	CreateProject(ctx *context.Context, in *pb.CreateProjectRequest) error
+	GetProject(ctx *context.Context, in *pb.GetProjectRequest) (*pb.GetProjectResponse, error)
 }
 
 type projectResource struct {
@@ -22,6 +23,15 @@ func (r *projectResource) CreateProject(ctx *context.Context, in *pb.CreateProje
 	}
 
 	return nil
+}
+
+func (r *projectResource) GetProject(ctx *context.Context, in *pb.GetProjectRequest) (*pb.GetProjectResponse, error) {
+	response, err := r.grpc.ProjectGRPC.GetProject(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, err
 }
 
 func NewProjectHandler(grpc *grpc.Grpc) IProject {

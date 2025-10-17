@@ -28,4 +28,5 @@ func AddRoutes(r *gin.RouterGroup) {
 
 	project := v1.Group("/project")
 	project.POST("/:userId", resource.Servers.Project.CreateProject)
+	project.GET("/:projectId", resource.Servers.Project.GetProject)
 }

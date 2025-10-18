@@ -91,3 +91,9 @@ func GetUserProfileToProto(userId string) (*pb.GetUserProfileRequest, error) {
 		UserId: userId,
 	}, nil
 }
+
+func GetUserTypeToProto(userId string) (*pb.GetUserTypeRequest, error) {
+	return &pb.GetUserTypeRequest{
+		UserId: userId,
+	}, nil
+}

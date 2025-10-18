@@ -23,6 +23,7 @@ type IUser interface {
 	GenerateReportPDF(c *gin.Context)
 	SendPasswordRecoveryEmail(c *gin.Context)
 	GetUserProfile(c *gin.Context)
+	GetUserType(c *gin.Context)
 }
 
 func (r *resource) CreateUser(c *gin.Context) {
@@ -262,6 +263,36 @@ func (r *resource) GetUserProfile(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, userProfile)
+}
+
+func (r *resource) GetUserType(c *gin.Context) {
+	auth := c.GetHeader("Authorization")
+	if auth == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "the Authorization header is required"})
+		return
+	}
+
+	userId := c.Param("userId")
+	if userId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "userId is required"})
+		return
+	}
+
+	getUserTypeRequest, err := transformer.GetUserTypeToProto(userId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	response, err := r.handler.User.GetUserType(&ctx, getUserTypeRequest)
+	if err != nil {
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
 }
 
 func NewUserServer(handler *handler.Handlers) IUser {

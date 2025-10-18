@@ -8,6 +8,7 @@ import (
 	"github.com/relaunch-cot/bff-relaunch/handler"
 	params "github.com/relaunch-cot/bff-relaunch/params/project"
 	"github.com/relaunch-cot/bff-relaunch/resource/transformer"
+	"github.com/relaunch-cot/lib-relaunch-cot/pkg/httpresponse"
 )
 
 type IProject interface {
@@ -45,7 +46,7 @@ func (r *resource) CreateProject(c *gin.Context) {
 
 	err = r.handler.Project.CreateProject(&ctx, createProjectRequest)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
 		return
 	}
 
@@ -75,7 +76,7 @@ func (r *resource) GetProject(c *gin.Context) {
 
 	response, err := r.handler.Project.GetProject(&ctx, getProjectRequest)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
 		return
 	}
 
@@ -117,7 +118,8 @@ func (r *resource) GetAllProjectsFromUser(c *gin.Context) {
 
 	response, err := r.handler.Project.GetAllProjectsFromUser(&ctx, getAllProjectsFromUserRequest)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
+		return
 	}
 
 	c.JSON(http.StatusOK, response)

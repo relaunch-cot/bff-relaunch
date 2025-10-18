@@ -10,6 +10,7 @@ import (
 type IProject interface {
 	CreateProject(ctx *context.Context, in *pb.CreateProjectRequest) error
 	GetProject(ctx *context.Context, in *pb.GetProjectRequest) (*pb.GetProjectResponse, error)
+	GetAllProjectsFromUser(ctx *context.Context, in *pb.GetAllProjectsFromUserRequest) (*pb.GetAllProjectsFromUserResponse, error)
 }
 
 type projectResource struct {
@@ -27,6 +28,15 @@ func (r *projectResource) CreateProject(ctx *context.Context, in *pb.CreateProje
 
 func (r *projectResource) GetProject(ctx *context.Context, in *pb.GetProjectRequest) (*pb.GetProjectResponse, error) {
 	response, err := r.grpc.ProjectGRPC.GetProject(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, err
+}
+
+func (r *projectResource) GetAllProjectsFromUser(ctx *context.Context, in *pb.GetAllProjectsFromUserRequest) (*pb.GetAllProjectsFromUserResponse, error) {
+	response, err := r.grpc.ProjectGRPC.GetAllProjectsFromUser(ctx, in)
 	if err != nil {
 		return nil, err
 	}

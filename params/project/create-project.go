@@ -3,7 +3,7 @@ package project
 import "time"
 
 type CreateProjectPOST struct {
-	DeveloperId             string    `json:"developerId"`
+	FreelancerId            string    `json:"freelancerId"`
 	Category                string    `json:"category"`
 	Name                    string    `json:"name"`
 	Description             string    `json:"description"`

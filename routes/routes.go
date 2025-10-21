@@ -23,13 +23,13 @@ func AddRoutes(r *gin.RouterGroup) {
 
 	chat := v1.Group("/chat")
 	chat.POST("", resource.Servers.Chat.CreateNewChat)
-	chat.POST("send-message/:senderId", resource.Servers.Chat.SendMessage)
-	chat.GET("messages/:chatId", resource.Servers.Chat.GetAllMessagesFromChat)
+	chat.POST("/send-message/:senderId", resource.Servers.Chat.SendMessage)
+	chat.GET("/messages/:chatId", resource.Servers.Chat.GetAllMessagesFromChat)
 	chat.GET("/:userId", resource.Servers.Chat.GetAllChatsFromUser)
 
 	project := v1.Group("/project")
 	project.POST("/:userId", resource.Servers.Project.CreateProject)
 	project.GET("/:projectId", resource.Servers.Project.GetProject)
-	project.GET("user/:userId", resource.Servers.Project.GetAllProjectsFromUser)
+	project.GET("/user/:userId", resource.Servers.Project.GetAllProjectsFromUser)
 	project.PUT("/:projectId", resource.Servers.Project.UpdateProject)
 }

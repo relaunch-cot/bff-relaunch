@@ -15,6 +15,7 @@ type IProject interface {
 	CreateProject(c *gin.Context)
 	GetProject(c *gin.Context)
 	GetAllProjectsFromUser(c *gin.Context)
+	UpdateProject(c *gin.Context)
 }
 
 func (r *resource) CreateProject(c *gin.Context) {
@@ -123,6 +124,47 @@ func (r *resource) GetAllProjectsFromUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response)
+}
+
+func (r *resource) UpdateProject(c *gin.Context) {
+	auth := c.GetHeader("Authorization")
+	if auth == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "the Authorization header is required"})
+		return
+	}
+
+	projectId := c.Param("projectId")
+	if projectId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "projectId is required"})
+		return
+	}
+
+	in := new(params.UpdateProjectPUT)
+
+	err := c.Bind(in)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error getting body of the request"})
+		return
+	}
+
+	updateProjectRequest, err := transformer.UpdateProjectToProto(projectId, in)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto. Details: " + err.Error()})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	response, err := r.handler.Project.UpdateProject(&ctx, updateProjectRequest)
+	if err != nil {
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "project updated successfully",
+		"project": response,
+	})
 }
 
 func NewProjectServer(handler *handler.Handlers) IProject {

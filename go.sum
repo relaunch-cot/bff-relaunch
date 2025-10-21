@@ -82,6 +82,10 @@ github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251018144914-d448e3871dc4 h1:q
 github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251018144914-d448e3871dc4/go.mod h1:AnBqPVRdO0Fr/Cscv1OszBA5hDJCM4LylAvj39riXws=
 github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251018164347-a2d96b6773e3 h1:nDOlxq8PZCi2WbGH81P0Vq7VUBzRFoQPrEOeoG/6A9M=
 github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251018164347-a2d96b6773e3/go.mod h1:AnBqPVRdO0Fr/Cscv1OszBA5hDJCM4LylAvj39riXws=
+github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251021002145-fb4dbe0621b0 h1:jOJwrusJfyjXlxNHmaUh2ysBSIP+pz5eWHpvk+aVEQE=
+github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251021002145-fb4dbe0621b0/go.mod h1:AnBqPVRdO0Fr/Cscv1OszBA5hDJCM4LylAvj39riXws=
+github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251021014254-544242d4ce38 h1:ddCZ8+WWkDCx9RkxuOXszb+KYjF+daS+3RLxqgwirXw=
+github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251021014254-544242d4ce38/go.mod h1:AnBqPVRdO0Fr/Cscv1OszBA5hDJCM4LylAvj39riXws=
 github.com/rogpeppe/go-internal v1.8.0 h1:FCbCCtXNOY3UtUuHUYaghJg4y7Fd14rXifAYUAtL9R8=
 github.com/rogpeppe/go-internal v1.8.0/go.mod h1:WmiCO8CzOY8rg0OYDC4/i/2WRWAB6poM+XZ2dLUbcbE=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=

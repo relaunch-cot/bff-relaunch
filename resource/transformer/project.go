@@ -56,3 +56,11 @@ func AddFreelancerToProjectToProto(projectId, freelancerId string) (*pb.AddFreel
 		ProjectId:    projectId,
 	}, nil
 }
+
+func RemoveFreelancerFromProjectToProto(projectId, freelancerId, userId string) (*pb.RemoveFreelancerFromProjectRequest, error) {
+	return &pb.RemoveFreelancerFromProjectRequest{
+		FreelancerId: freelancerId,
+		ProjectId:    projectId,
+		UserId:       userId,
+	}, nil
+}

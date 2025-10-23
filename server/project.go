@@ -17,6 +17,7 @@ type IProject interface {
 	GetAllProjectsFromUser(c *gin.Context)
 	UpdateProject(c *gin.Context)
 	AddFreelancerToProject(c *gin.Context)
+	RemoveFreelancerFromProject(c *gin.Context)
 }
 
 func (r *resource) CreateProject(c *gin.Context) {
@@ -203,6 +204,43 @@ func (r *resource) AddFreelancerToProject(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "freelancer added to project successfully"})
+}
+
+func (r *resource) RemoveFreelancerFromProject(c *gin.Context) {
+	auth := c.GetHeader("Authorization")
+	if auth == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "the Authorization header is required"})
+		return
+	}
+
+	projectId := c.Param("projectId")
+	if projectId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "projectId is required"})
+		return
+	}
+
+	in := new(params.RemoveFreelancerFromProjectPATCH)
+	err := c.Bind(in)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error getting body of the request"})
+		return
+	}
+
+	removeFreelancerFromProjectRequest, err := transformer.RemoveFreelancerFromProjectToProto(projectId, in.FreelancerId, in.UserId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	err = r.handler.Project.RemoveFreelancerFromProject(&ctx, removeFreelancerFromProjectRequest)
+	if err != nil {
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "freelancer removed from project successfully"})
 }
 
 func NewProjectServer(handler *handler.Handlers) IProject {

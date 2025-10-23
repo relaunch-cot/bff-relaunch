@@ -12,6 +12,7 @@ type IProjectGRPC interface {
 	GetAllProjectsFromUser(ctx *context.Context, in *pb.GetAllProjectsFromUserRequest) (*pb.GetAllProjectsFromUserResponse, error)
 	UpdateProject(ctx *context.Context, in *pb.UpdateProjectRequest) (*pb.UpdateProjectResponse, error)
 	AddFreelancerToProject(ctx *context.Context, in *pb.AddFreelancerToProjectRequest) error
+	RemoveFreelancerFromProject(ctx *context.Context, in *pb.RemoveFreelancerFromProjectRequest) error
 }
 
 type resource struct {
@@ -55,6 +56,15 @@ func (r *resource) UpdateProject(ctx *context.Context, in *pb.UpdateProjectReque
 
 func (r *resource) AddFreelancerToProject(ctx *context.Context, in *pb.AddFreelancerToProjectRequest) error {
 	_, err := r.grpcClient.AddFreelancerToProject(*ctx, in)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *resource) RemoveFreelancerFromProject(ctx *context.Context, in *pb.RemoveFreelancerFromProjectRequest) error {
+	_, err := r.grpcClient.RemoveFreelancerFromProject(*ctx, in)
 	if err != nil {
 		return err
 	}

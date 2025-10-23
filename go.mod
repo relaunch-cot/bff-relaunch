@@ -5,7 +5,8 @@ go 1.24.1
 require (
 	github.com/gin-contrib/cors v1.7.5
 	github.com/gin-gonic/gin v1.10.1
-	github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251022233357-169a8927ae2c
+	github.com/goccy/go-json v0.10.5
+	github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251023005957-f24c914ed67f
 	google.golang.org/grpc v1.73.0
 )
 
@@ -18,7 +19,6 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.26.0 // indirect
-	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.10 // indirect
 	github.com/kr/text v0.2.0 // indirect

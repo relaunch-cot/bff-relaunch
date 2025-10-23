@@ -14,6 +14,7 @@ type IProject interface {
 	UpdateProject(ctx *context.Context, in *pb.UpdateProjectRequest) (*pb.UpdateProjectResponse, error)
 	AddFreelancerToProject(ctx *context.Context, in *pb.AddFreelancerToProjectRequest) error
 	RemoveFreelancerFromProject(ctx *context.Context, in *pb.RemoveFreelancerFromProjectRequest) error
+	GetAllProjects(ctx *context.Context) (*pb.GetAllProjectsResponse, error)
 }
 
 type projectResource struct {
@@ -72,6 +73,15 @@ func (r *projectResource) RemoveFreelancerFromProject(ctx *context.Context, in *
 	}
 
 	return nil
+}
+
+func (r *projectResource) GetAllProjects(ctx *context.Context) (*pb.GetAllProjectsResponse, error) {
+	response, err := r.grpc.ProjectGRPC.GetAllProjects(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
 }
 
 func NewProjectHandler(grpc *grpc.Grpc) IProject {

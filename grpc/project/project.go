@@ -3,6 +3,7 @@ package project
 import (
 	"context"
 
+	"github.com/golang/protobuf/ptypes/empty"
 	pb "github.com/relaunch-cot/lib-relaunch-cot/proto/project"
 )
 
@@ -13,6 +14,7 @@ type IProjectGRPC interface {
 	UpdateProject(ctx *context.Context, in *pb.UpdateProjectRequest) (*pb.UpdateProjectResponse, error)
 	AddFreelancerToProject(ctx *context.Context, in *pb.AddFreelancerToProjectRequest) error
 	RemoveFreelancerFromProject(ctx *context.Context, in *pb.RemoveFreelancerFromProjectRequest) error
+	GetAllProjects(ctx *context.Context) (*pb.GetAllProjectsResponse, error)
 }
 
 type resource struct {
@@ -70,6 +72,15 @@ func (r *resource) RemoveFreelancerFromProject(ctx *context.Context, in *pb.Remo
 	}
 
 	return nil
+}
+
+func (r *resource) GetAllProjects(ctx *context.Context) (*pb.GetAllProjectsResponse, error) {
+	resp, err := r.grpcClient.GetAllProjects(*ctx, &empty.Empty{})
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
 }
 
 func NewProjectGrpcClient(grpcClient pb.ProjectServiceClient) IProjectGRPC {

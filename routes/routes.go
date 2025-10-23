@@ -34,4 +34,5 @@ func AddRoutes(r *gin.RouterGroup) {
 	project.PUT("/:projectId", resource.Servers.Project.UpdateProject)
 	project.PATCH("/add-freelancer/:projectId", resource.Servers.Project.AddFreelancerToProject)
 	project.PATCH("/remove-freelancer/:projectId", resource.Servers.Project.RemoveFreelancerFromProject)
+	project.GET("", resource.Servers.Project.GetAllProjects)
 }

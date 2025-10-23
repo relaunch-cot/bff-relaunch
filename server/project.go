@@ -18,6 +18,7 @@ type IProject interface {
 	UpdateProject(c *gin.Context)
 	AddFreelancerToProject(c *gin.Context)
 	RemoveFreelancerFromProject(c *gin.Context)
+	GetAllProjects(c *gin.Context)
 }
 
 func (r *resource) CreateProject(c *gin.Context) {
@@ -241,6 +242,24 @@ func (r *resource) RemoveFreelancerFromProject(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "freelancer removed from project successfully"})
+}
+
+func (r *resource) GetAllProjects(c *gin.Context) {
+	auth := c.GetHeader("Authorization")
+	if auth == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "the Authorization header is required"})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	response, err := r.handler.Project.GetAllProjects(&ctx)
+	if err != nil {
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
 }
 
 func NewProjectServer(handler *handler.Handlers) IProject {

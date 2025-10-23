@@ -6,7 +6,8 @@ require (
 	github.com/gin-contrib/cors v1.7.5
 	github.com/gin-gonic/gin v1.10.1
 	github.com/goccy/go-json v0.10.5
-	github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251023005957-f24c914ed67f
+	github.com/golang/protobuf v1.5.4
+	github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251023172515-35bc997eb055
 	google.golang.org/grpc v1.73.0
 )
 

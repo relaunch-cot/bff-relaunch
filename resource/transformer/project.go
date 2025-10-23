@@ -49,3 +49,10 @@ func UpdateProjectToProto(projectId string, in *params.UpdateProjectPUT) (*pb.Up
 
 	return updateProjectRequest, nil
 }
+
+func AddFreelancerToProjectToProto(projectId, freelancerId string) (*pb.AddFreelancerToProjectRequest, error) {
+	return &pb.AddFreelancerToProjectRequest{
+		FreelancerId: freelancerId,
+		ProjectId:    projectId,
+	}, nil
+}

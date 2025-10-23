@@ -11,6 +11,7 @@ type IProjectGRPC interface {
 	GetProject(ctx *context.Context, in *pb.GetProjectRequest) (*pb.GetProjectResponse, error)
 	GetAllProjectsFromUser(ctx *context.Context, in *pb.GetAllProjectsFromUserRequest) (*pb.GetAllProjectsFromUserResponse, error)
 	UpdateProject(ctx *context.Context, in *pb.UpdateProjectRequest) (*pb.UpdateProjectResponse, error)
+	AddFreelancerToProject(ctx *context.Context, in *pb.AddFreelancerToProjectRequest) error
 }
 
 type resource struct {
@@ -50,6 +51,15 @@ func (r *resource) UpdateProject(ctx *context.Context, in *pb.UpdateProjectReque
 	}
 
 	return resp, nil
+}
+
+func (r *resource) AddFreelancerToProject(ctx *context.Context, in *pb.AddFreelancerToProjectRequest) error {
+	_, err := r.grpcClient.AddFreelancerToProject(*ctx, in)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func NewProjectGrpcClient(grpcClient pb.ProjectServiceClient) IProjectGRPC {

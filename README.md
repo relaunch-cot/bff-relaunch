@@ -52,10 +52,10 @@
 
 ## Padrões requisitados
 - padrão singleton aplicado
-# Padrões GoF aplicados além do singleton:
+### Padrões GoF aplicados além do singleton:
 - Adapter
 - Facade
 - Strategy
 - Factory
 - Iterator
-# além disso o projeto também aplica padrões de arquitetura (Repository, Dependency Injection) que não são parte dos GoF clássicos, mas complementam a estrutura.
+### além disso o projeto também aplica padrões de arquitetura (Repository, Dependency Injection) que não são parte dos GoF clássicos, mas complementam a estrutura.

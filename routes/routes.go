@@ -39,4 +39,5 @@ func AddRoutes(r *gin.RouterGroup) {
 
 	notification := v1.Group("/notification")
 	notification.POST("/:senderId", middleware.ValidateUserToken, resource.Servers.Notification.SendNotification)
+	notification.GET("/:notificationId", middleware.ValidateUserToken, resource.Servers.Notification.GetNotification)
 }

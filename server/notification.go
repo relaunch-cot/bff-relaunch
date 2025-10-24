@@ -13,6 +13,7 @@ import (
 
 type INotification interface {
 	SendNotification(c *gin.Context)
+	GetNotification(c *gin.Context)
 }
 
 func (r *resource) SendNotification(c *gin.Context) {
@@ -49,6 +50,29 @@ func (r *resource) SendNotification(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "notification sent successfully"})
+}
+func (r *resource) GetNotification(c *gin.Context) {
+	notificationId := c.Param("notificationId")
+	if notificationId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "userId is required"})
+		return
+	}
+
+	getNotificationRequest, err := transformer.GetNotificationToProto(notificationId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	getNotificationResponse, err := r.handler.Notification.GetNotification(&ctx, getNotificationRequest)
+	if err != nil {
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, getNotificationResponse)
 }
 
 func NewNotificationServer(handler *handler.Handlers) INotification {

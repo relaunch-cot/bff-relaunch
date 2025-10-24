@@ -11,3 +11,9 @@ func SendNotificationToProto(senderId, receiverId, title, content, notificationT
 		Type:       notificationType,
 	}, nil
 }
+
+func GetNotificationToProto(notificationId string) (*pbNotification.GetNotificationRequest, error) {
+	return &pbNotification.GetNotificationRequest{
+		NotificationId: notificationId,
+	}, nil
+}

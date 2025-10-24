@@ -9,6 +9,7 @@ import (
 type INotificationGRPC interface {
 	SendNotification(ctx *context.Context, in *pb.SendNotificationRequest) error
 	GetNotification(ctx *context.Context, in *pb.GetNotificationRequest) (*pb.GetNotificationResponse, error)
+	GetAllNotificationsFromUser(ctx *context.Context, in *pb.GetAllNotificationsFromUserRequest) (*pb.GetAllNotificationsFromUserResponse, error)
 }
 
 type resource struct {
@@ -31,6 +32,15 @@ func (r *resource) GetNotification(ctx *context.Context, in *pb.GetNotificationR
 	}
 
 	return getNotificationResponse, nil
+}
+
+func (r *resource) GetAllNotificationsFromUser(ctx *context.Context, in *pb.GetAllNotificationsFromUserRequest) (*pb.GetAllNotificationsFromUserResponse, error) {
+	getAllNotificationsFromUserResponse, err := r.grpcClient.GetAllNotificationsFromUser(*ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return getAllNotificationsFromUserResponse, nil
 }
 
 func NewNotificationGrpcClient(grpcClient pb.NotificationServiceClient) INotificationGRPC {

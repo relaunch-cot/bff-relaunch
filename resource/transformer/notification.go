@@ -17,3 +17,9 @@ func GetNotificationToProto(notificationId string) (*pbNotification.GetNotificat
 		NotificationId: notificationId,
 	}, nil
 }
+
+func GetAllNotificationsFromUserToProto(userId string) (*pbNotification.GetAllNotificationsFromUserRequest, error) {
+	return &pbNotification.GetAllNotificationsFromUserRequest{
+		UserId: userId,
+	}, nil
+}

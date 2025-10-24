@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/relaunch-cot/bff-relaunch/middleware"
 	"github.com/relaunch-cot/bff-relaunch/resource"
 )
 
@@ -11,28 +12,31 @@ func AddRoutes(r *gin.RouterGroup) {
 	user := v1.Group("/user")
 	user.POST("/register", resource.Servers.User.CreateUser)
 	user.POST("/login", resource.Servers.User.LoginUser)
-	user.PUT("/:id", resource.Servers.User.UpdateUser)
+	user.PUT("/:id", middleware.ValidateUserToken, resource.Servers.User.UpdateUser)
 	user.PATCH("", resource.Servers.User.UpdateUserPassword)
-	user.DELETE("", resource.Servers.User.DeleteUser)
+	user.DELETE("", middleware.ValidateUserToken, resource.Servers.User.DeleteUser)
 	user.POST("/send-email", resource.Servers.User.SendPasswordRecoveryEmail)
-	user.GET("/:userId", resource.Servers.User.GetUserProfile)
-	user.GET("/userType/:userId", resource.Servers.User.GetUserType)
+	user.GET("/:userId", middleware.ValidateUserToken, resource.Servers.User.GetUserProfile)
+	user.GET("/userType/:userId", middleware.ValidateUserToken, resource.Servers.User.GetUserType)
 
 	reports := v1.Group("/reports")
-	reports.POST("/generate-pdf", resource.Servers.User.GenerateReportPDF)
+	reports.POST("/generate-pdf", middleware.ValidateUserToken, resource.Servers.User.GenerateReportPDF)
 
 	chat := v1.Group("/chat")
-	chat.POST("", resource.Servers.Chat.CreateNewChat)
-	chat.POST("/send-message/:senderId", resource.Servers.Chat.SendMessage)
-	chat.GET("/messages/:chatId", resource.Servers.Chat.GetAllMessagesFromChat)
-	chat.GET("/:userId", resource.Servers.Chat.GetAllChatsFromUser)
+	chat.POST("", middleware.ValidateUserToken, resource.Servers.Chat.CreateNewChat)
+	chat.POST("/send-message/:senderId", middleware.ValidateUserToken, resource.Servers.Chat.SendMessage)
+	chat.GET("/messages/:chatId", middleware.ValidateUserToken, resource.Servers.Chat.GetAllMessagesFromChat)
+	chat.GET("/:userId", middleware.ValidateUserToken, resource.Servers.Chat.GetAllChatsFromUser)
 
 	project := v1.Group("/project")
-	project.POST("/:userId", resource.Servers.Project.CreateProject)
-	project.GET("/:projectId", resource.Servers.Project.GetProject)
-	project.GET("/user/:userId", resource.Servers.Project.GetAllProjectsFromUser)
-	project.PUT("/:projectId", resource.Servers.Project.UpdateProject)
-	project.PATCH("/add-freelancer/:projectId", resource.Servers.Project.AddFreelancerToProject)
-	project.PATCH("/remove-freelancer/:projectId", resource.Servers.Project.RemoveFreelancerFromProject)
-	project.GET("", resource.Servers.Project.GetAllProjects)
+	project.POST("/:userId", middleware.ValidateUserToken, resource.Servers.Project.CreateProject)
+	project.GET("/:projectId", middleware.ValidateUserToken, resource.Servers.Project.GetProject)
+	project.GET("/user/:userId", middleware.ValidateUserToken, resource.Servers.Project.GetAllProjectsFromUser)
+	project.PUT("/:projectId", middleware.ValidateUserToken, resource.Servers.Project.UpdateProject)
+	project.PATCH("/add-freelancer/:projectId", middleware.ValidateUserToken, resource.Servers.Project.AddFreelancerToProject)
+	project.PATCH("/remove-freelancer/:projectId", middleware.ValidateUserToken, resource.Servers.Project.RemoveFreelancerFromProject)
+	project.GET("", middleware.ValidateUserToken, resource.Servers.Project.GetAllProjects)
+
+	notification := v1.Group("/notification")
+	notification.POST("/:senderId", middleware.ValidateUserToken, resource.Servers.Notification.SendNotification)
 }

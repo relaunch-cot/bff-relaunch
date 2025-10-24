@@ -236,12 +236,6 @@ func (r *resource) SendPasswordRecoveryEmail(c *gin.Context) {
 }
 
 func (r *resource) GetUserProfile(c *gin.Context) {
-	auth := c.GetHeader("Authorization")
-	if auth == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "the Authorization header is required"})
-		return
-	}
-
 	userId := c.Param("userId")
 	if userId == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "userId is required"})
@@ -266,12 +260,6 @@ func (r *resource) GetUserProfile(c *gin.Context) {
 }
 
 func (r *resource) GetUserType(c *gin.Context) {
-	auth := c.GetHeader("Authorization")
-	if auth == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "the Authorization header is required"})
-		return
-	}
-
 	userId := c.Param("userId")
 	if userId == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "userId is required"})

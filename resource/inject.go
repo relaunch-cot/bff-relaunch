@@ -6,6 +6,7 @@ import (
 	"github.com/relaunch-cot/bff-relaunch/handler"
 	"github.com/relaunch-cot/bff-relaunch/server"
 	pbChat "github.com/relaunch-cot/lib-relaunch-cot/proto/chat"
+	pbNotification "github.com/relaunch-cot/lib-relaunch-cot/proto/notification"
 	pbProject "github.com/relaunch-cot/lib-relaunch-cot/proto/project"
 	pbUser "github.com/relaunch-cot/lib-relaunch-cot/proto/user"
 )
@@ -18,8 +19,9 @@ func Inject() {
 	openUserGrpcConnection := openGrpcClientConn(config.USER_MICROSERVICE_CONN, pbUser.NewUserServiceClient)
 	openChatGrpcConnection := openGrpcClientConn(config.CHAT_MICROSSEVICE_CONN, pbChat.NewChatServiceClient)
 	openProjectGrpcConnection := openGrpcClientConn(config.PROJECT_MICROSSERVICE_CONN, pbProject.NewProjectServiceClient)
+	openNotificationGrpcConnection := openGrpcClientConn(config.NOTIFICATION_MICROSERVICE_CONN, pbNotification.NewNotificationServiceClient)
 
-	Grpc.Inject(openUserGrpcConnection, openChatGrpcConnection, openProjectGrpcConnection)
+	Grpc.Inject(openUserGrpcConnection, openChatGrpcConnection, openProjectGrpcConnection, openNotificationGrpcConnection)
 
 	Handlers.Inject(&Grpc)
 	Servers.Inject(&Handlers)

@@ -22,12 +22,6 @@ type IProject interface {
 }
 
 func (r *resource) CreateProject(c *gin.Context) {
-	auth := c.GetHeader("Authorization")
-	if auth == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "the Authorization header is required"})
-		return
-	}
-
 	userId := c.Param("userId")
 	if userId == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "userId is required"})
@@ -58,12 +52,6 @@ func (r *resource) CreateProject(c *gin.Context) {
 }
 
 func (r *resource) GetProject(c *gin.Context) {
-	auth := c.GetHeader("Authorization")
-	if auth == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "the Authorization header is required"})
-		return
-	}
-
 	projectId := c.Param("projectId")
 	if projectId == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "projectId is required"})
@@ -88,12 +76,6 @@ func (r *resource) GetProject(c *gin.Context) {
 }
 
 func (r *resource) GetAllProjectsFromUser(c *gin.Context) {
-	auth := c.GetHeader("Authorization")
-	if auth == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "the Authorization header is required"})
-		return
-	}
-
 	userId := c.Param("userId")
 	if userId == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "userId is required"})
@@ -130,12 +112,6 @@ func (r *resource) GetAllProjectsFromUser(c *gin.Context) {
 }
 
 func (r *resource) UpdateProject(c *gin.Context) {
-	auth := c.GetHeader("Authorization")
-	if auth == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "the Authorization header is required"})
-		return
-	}
-
 	projectId := c.Param("projectId")
 	if projectId == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "projectId is required"})
@@ -171,12 +147,6 @@ func (r *resource) UpdateProject(c *gin.Context) {
 }
 
 func (r *resource) AddFreelancerToProject(c *gin.Context) {
-	auth := c.GetHeader("Authorization")
-	if auth == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "the Authorization header is required"})
-		return
-	}
-
 	projectId := c.Param("projectId")
 	if projectId == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "projectId is required"})
@@ -208,12 +178,6 @@ func (r *resource) AddFreelancerToProject(c *gin.Context) {
 }
 
 func (r *resource) RemoveFreelancerFromProject(c *gin.Context) {
-	auth := c.GetHeader("Authorization")
-	if auth == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "the Authorization header is required"})
-		return
-	}
-
 	projectId := c.Param("projectId")
 	if projectId == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "projectId is required"})
@@ -245,12 +209,6 @@ func (r *resource) RemoveFreelancerFromProject(c *gin.Context) {
 }
 
 func (r *resource) GetAllProjects(c *gin.Context) {
-	auth := c.GetHeader("Authorization")
-	if auth == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "the Authorization header is required"})
-		return
-	}
-
 	ctx := c.Request.Context()
 
 	response, err := r.handler.Project.GetAllProjects(&ctx)

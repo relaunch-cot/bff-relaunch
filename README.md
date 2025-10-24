@@ -18,20 +18,44 @@
   - PORT: (porta em que o bff vai rodar)
   - IS_INSECURE = true
   - USER_MICROSERVICE_CONN: (url de conexão para o microserviço de user)
+  - CHAT_MICROSERVICE_CONN: (url de conexão para o microserviço de chat)
+  - NOTIFICATION_MICROSERVICE_CONN (url de conexão para o microserviço de notificação)
+  - PROJECT_MICROSERVICE_CONN (url de conexão para o microserviço de projeto)
+  - JWT_SECRET (secret key do token de usuário definida no microserviço de user)
 - Rodar 'go build main.go' no terminal
 - Rodar 'go run main.go' no terminal
 
-## Funcionalidades
-### Backend/Frontend
+## Funcionalidades implementadas
 - [x]  Permitir login do usuário
 - [x]  Permitir cadastro do usuário
 - [x]  Usuário redefinir  a senha
 - [x]  Permitir deletar usuário
-- [x]  Permitir atualizar email e nome
-- [ ]  O usuário deve poder personalizar as configurações do perfil
+- [x]  O usuário deve poder personalizar as configurações do perfil
+- [x]  Buscar informações de perfil do usuario
 - [x]  Deve ser possível exportar relatórios em PDF.
-- [ ]  O freelancer define o tempo para o desenvolvimento da aplicação
-
-### Frontend
+- [x]  Enviar Email de recuperação de senha
+- [x]  Usuário deletar sua conta
 - [x]  Usuário fazer logout da plataforma
-- [ ]  O usuário deve conseguir selecionar o tema da plataforma
+- [x]  Criar um novo chat entre usuarios
+- [x]  Enviar mensagens no chat entre usuários
+- [x]  Buscar todas as mensagens de um chat específico
+- [x]  Buscar todos os chats de um usuário
+- [x]  Criar um novo projeto (usuários que sejam clientes)
+- [x]  Buscar um projeto específico
+- [x]  Buscar todos os projetos de um usuário
+- [x]  Adicionar freelancer a um projeto
+- [x]  Remover freelancer de um projeto
+- [x]  Listar todos os projetos que estejam sem um freelancer desenvolvendo o mesmo, ou seja, disponíveis para desenvolvimento
+- [x]  Enviar norificações para o usuário (seja de uma mensagem nova, seja de solicitação para participar de um projeto...)
+- [x]  Buscar informações de uma notificação específica
+- [x]  Buscar todas as notificações de um usuário
+
+## Padrões requisitados
+- padrão singleton aplicado
+# Padrões GoF aplicados além do singleton:
+- Adapter
+- Facade
+- Strategy
+- Factory
+- Iterator
+# além disso o projeto também aplica padrões de arquitetura (Repository, Dependency Injection) que não são parte dos GoF clássicos, mas complementam a estrutura.

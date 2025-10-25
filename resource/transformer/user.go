@@ -48,9 +48,8 @@ func UpdateUserToProto(in *libModels.User) (*pb.UpdateUserRequest, error) {
 	}
 
 	return &pb.UpdateUserRequest{
-		UserId:   in.UserId,
-		Password: in.Password,
-		NewUser:  newUser,
+		UserId:  in.UserId,
+		NewUser: newUser,
 	}, nil
 }
 

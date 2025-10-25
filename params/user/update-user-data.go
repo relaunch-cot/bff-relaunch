@@ -8,7 +8,6 @@ import (
 type UpdateUserPUT struct {
 	Name     string              `json:"name" form:"name"`
 	Email    string              `json:"email" form:"email"`
-	Password string              `json:"password" form:"password"`
 	Settings models.UserSettings `json:"settings" form:"settings"`
 	Type     string              `json:"type" form:"type"`
 }

@@ -8,7 +8,7 @@ require (
 	github.com/goccy/go-json v0.10.5
 	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/golang/protobuf v1.5.4
-	github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251025001425-597d7aa093aa
+	github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251025011755-62386c6d8a48
 	google.golang.org/grpc v1.73.0
 )
 

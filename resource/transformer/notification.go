@@ -23,3 +23,15 @@ func GetAllNotificationsFromUserToProto(userId string) (*pbNotification.GetAllNo
 		UserId: userId,
 	}, nil
 }
+
+func DeleteNotificationToProto(notificationId string) (*pbNotification.DeleteNotificationRequest, error) {
+	return &pbNotification.DeleteNotificationRequest{
+		NotificationId: notificationId,
+	}, nil
+}
+
+func DeleteAllNotificationsFromUserToProto(userId string) (*pbNotification.DeleteAllNotificationsFromUserRequest, error) {
+	return &pbNotification.DeleteAllNotificationsFromUserRequest{
+		UserId: userId,
+	}, nil
+}

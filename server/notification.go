@@ -15,6 +15,8 @@ type INotification interface {
 	SendNotification(c *gin.Context)
 	GetNotification(c *gin.Context)
 	GetAllNotificationsFromUser(c *gin.Context)
+	DeleteNotification(c *gin.Context)
+	DeleteAllNotificationsFromUser(c *gin.Context)
 }
 
 func (r *resource) SendNotification(c *gin.Context) {
@@ -98,6 +100,54 @@ func (r *resource) GetAllNotificationsFromUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, getAllNotificationsFromUserResponse)
+}
+
+func (r *resource) DeleteNotification(c *gin.Context) {
+	notificationId := c.Param("notificationId")
+	if notificationId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "notificationId is required"})
+		return
+	}
+
+	deleteNotificationRequest, err := transformer.DeleteNotificationToProto(notificationId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	err = r.handler.Notification.DeleteNotification(&ctx, deleteNotificationRequest)
+	if err != nil {
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "notification deleted successfully"})
+}
+
+func (r *resource) DeleteAllNotificationsFromUser(c *gin.Context) {
+	userId := c.Param("userId")
+	if userId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "userId is required"})
+		return
+	}
+
+	deleteAllNotificationsFromUserRequest, err := transformer.DeleteAllNotificationsFromUserToProto(userId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	err = r.handler.Notification.DeleteAllNotificationsFromUser(&ctx, deleteAllNotificationsFromUserRequest)
+	if err != nil {
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "all notifications from user deleted successfully"})
 }
 
 func NewNotificationServer(handler *handler.Handlers) INotification {

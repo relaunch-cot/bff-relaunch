@@ -11,6 +11,8 @@ type INotification interface {
 	SendNotification(ctx *context.Context, in *pb.SendNotificationRequest) error
 	GetNotification(ctx *context.Context, in *pb.GetNotificationRequest) (*pb.GetNotificationResponse, error)
 	GetAllNotificationsFromUser(ctx *context.Context, in *pb.GetAllNotificationsFromUserRequest) (*pb.GetAllNotificationsFromUserResponse, error)
+	DeleteNotification(ctx *context.Context, in *pb.DeleteNotificationRequest) error
+	DeleteAllNotificationsFromUser(ctx *context.Context, in *pb.DeleteAllNotificationsFromUserRequest) error
 }
 
 type notificationResource struct {
@@ -42,6 +44,24 @@ func (r *notificationResource) GetAllNotificationsFromUser(ctx *context.Context,
 	}
 
 	return getAllNotificationsFromUserResponse, nil
+}
+
+func (r *notificationResource) DeleteNotification(ctx *context.Context, in *pb.DeleteNotificationRequest) error {
+	err := r.grpcClient.NotificationGRPC.DeleteNotification(ctx, in)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *notificationResource) DeleteAllNotificationsFromUser(ctx *context.Context, in *pb.DeleteAllNotificationsFromUserRequest) error {
+	err := r.grpcClient.NotificationGRPC.DeleteAllNotificationsFromUser(ctx, in)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func NewNotificationHandler(grpcClient *grpc.Grpc) INotification {

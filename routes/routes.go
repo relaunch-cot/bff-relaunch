@@ -41,4 +41,6 @@ func AddRoutes(r *gin.RouterGroup) {
 	notification.POST("/:senderId", middleware.ValidateUserToken, resource.Servers.Notification.SendNotification)
 	notification.GET("/:notificationId", middleware.ValidateUserToken, resource.Servers.Notification.GetNotification)
 	notification.GET("/user/:userId", middleware.ValidateUserToken, resource.Servers.Notification.GetAllNotificationsFromUser)
+	notification.DELETE("/:notificationId", middleware.ValidateUserToken, resource.Servers.Notification.DeleteNotification)
+	notification.DELETE("/user/:userId", middleware.ValidateUserToken, resource.Servers.Notification.DeleteAllNotificationsFromUser)
 }

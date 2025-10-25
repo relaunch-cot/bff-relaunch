@@ -17,7 +17,6 @@ func AddRoutes(r *gin.RouterGroup) {
 	user.DELETE("", middleware.ValidateUserToken, resource.Servers.User.DeleteUser)
 	user.POST("/send-email", resource.Servers.User.SendPasswordRecoveryEmail)
 	user.GET("/:userId", middleware.ValidateUserToken, resource.Servers.User.GetUserProfile)
-	user.GET("/userType/:userId", middleware.ValidateUserToken, resource.Servers.User.GetUserType)
 
 	reports := v1.Group("/reports")
 	reports.POST("/generate-pdf", middleware.ValidateUserToken, resource.Servers.User.GenerateReportPDF)
@@ -27,6 +26,7 @@ func AddRoutes(r *gin.RouterGroup) {
 	chat.POST("/send-message/:senderId", middleware.ValidateUserToken, resource.Servers.Chat.SendMessage)
 	chat.GET("/messages/:chatId", middleware.ValidateUserToken, resource.Servers.Chat.GetAllMessagesFromChat)
 	chat.GET("/:userId", middleware.ValidateUserToken, resource.Servers.Chat.GetAllChatsFromUser)
+	chat.GET("", middleware.ValidateUserToken, resource.Servers.Chat.GetChatFromUsers)
 
 	project := v1.Group("/project")
 	project.POST("/:userId", middleware.ValidateUserToken, resource.Servers.Project.CreateProject)

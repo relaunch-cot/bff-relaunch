@@ -24,3 +24,9 @@ func GetAllMessagesFromChatToProto(chatId string) (*pb.GetAllMessagesFromChatReq
 func GetAllChatsFromUserToProto(userId string) (*pb.GetAllChatsFromUserRequest, error) {
 	return &pb.GetAllChatsFromUserRequest{UserId: userId}, nil
 }
+
+func GetChatFromUsersToProto(userIds []string) (*pb.GetChatFromUsersRequest, error) {
+	return &pb.GetChatFromUsersRequest{
+		UserIds: userIds,
+	}, nil
+}

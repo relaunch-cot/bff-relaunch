@@ -15,6 +15,7 @@ type IChat interface {
 	SendMessage(c *gin.Context)
 	GetAllMessagesFromChat(c *gin.Context)
 	GetAllChatsFromUser(c *gin.Context)
+	GetChatFromUsers(c *gin.Context)
 }
 
 func (r *resource) CreateNewChat(c *gin.Context) {
@@ -123,6 +124,39 @@ func (r *resource) GetAllChatsFromUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, getAllChatsFromUserResponse)
+}
+
+func (r *resource) GetChatFromUsers(c *gin.Context) {
+	in := new(params.GetChatFromUsersGET)
+	err := c.BindQuery(in)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error getting query params"})
+		return
+	}
+
+	var userIds []string
+	userIds = append(userIds, in.User1Id, in.User2Id)
+
+	if len(userIds) < 2 || len(userIds) > 2 {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "must be two userIds"})
+		return
+	}
+
+	getChatFromUsersRequest, err := transformer.GetChatFromUsersToProto(userIds)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	getChatFromUsersResponse, err := r.handler.Chat.GetChatFromUsers(&ctx, getChatFromUsersRequest)
+	if err != nil {
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, getChatFromUsersResponse)
 }
 
 func NewChatServer(handler *handler.Handlers) IChat {

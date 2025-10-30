@@ -7,6 +7,7 @@ import (
 	"github.com/relaunch-cot/bff-relaunch/handler"
 	params "github.com/relaunch-cot/bff-relaunch/params/chat"
 	"github.com/relaunch-cot/bff-relaunch/resource/transformer"
+	"github.com/relaunch-cot/bff-relaunch/websocket"
 	"github.com/relaunch-cot/lib-relaunch-cot/pkg/httpresponse"
 )
 
@@ -74,6 +75,15 @@ func (r *resource) SendMessage(c *gin.Context) {
 		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
 		return
 	}
+
+	go func() {
+		message := map[string]interface{}{
+			"chatId":         in.ChatId,
+			"senderId":       senderId,
+			"messageContent": in.MessageContent,
+		}
+		websocket.SendNewChatMessage(in.ChatId, message)
+	}()
 
 	c.JSON(http.StatusCreated, gin.H{"message": "message sent successfully"})
 }

@@ -4,10 +4,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/relaunch-cot/bff-relaunch/middleware"
 	"github.com/relaunch-cot/bff-relaunch/resource"
+	"github.com/relaunch-cot/bff-relaunch/websocket"
 )
 
 func AddRoutes(r *gin.RouterGroup) {
 	v1 := r.Group("/v1")
+
+	ws := v1.Group("/ws")
+	ws.GET("/notifications", websocket.HandleWebSocketNotifications(websocket.WSManager))
+	ws.GET("/chat", websocket.HandleWebSocketChat(websocket.WSManager))
 
 	user := v1.Group("/user")
 	user.POST("/register", resource.Servers.User.CreateUser)

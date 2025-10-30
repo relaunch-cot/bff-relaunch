@@ -1,0 +1,166 @@
+package websocket
+
+import (
+	"log"
+	"sync"
+
+	"github.com/gorilla/websocket"
+)
+
+type Client struct {
+	ID       string
+	UserID   string
+	Conn     *websocket.Conn
+	Send     chan []byte
+	Manager  *Manager
+	ChatRoom string
+}
+
+type Manager struct {
+	clients map[string]*Client
+
+	chatRooms map[string]map[string]*Client
+
+	register chan *Client
+
+	unregister chan *Client
+
+	broadcast chan *BroadcastMessage
+
+	mu sync.RWMutex
+}
+
+type BroadcastMessage struct {
+	UserID  string
+	ChatID  string
+	Message []byte
+	Type    string
+}
+
+func NewManager() *Manager {
+	return &Manager{
+		clients:    make(map[string]*Client),
+		chatRooms:  make(map[string]map[string]*Client),
+		register:   make(chan *Client),
+		unregister: make(chan *Client),
+		broadcast:  make(chan *BroadcastMessage, 256),
+	}
+}
+
+func (m *Manager) Run() {
+	for {
+		select {
+		case client := <-m.register:
+			m.registerClient(client)
+
+		case client := <-m.unregister:
+			m.unregisterClient(client)
+
+		case message := <-m.broadcast:
+			m.broadcastMessage(message)
+		}
+	}
+}
+
+func (m *Manager) registerClient(client *Client) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	if existingClient, exists := m.clients[client.UserID]; exists {
+		close(existingClient.Send)
+		existingClient.Conn.Close()
+	}
+
+	m.clients[client.UserID] = client
+	log.Printf("Client registered: %s (UserID: %s)", client.ID, client.UserID)
+}
+
+func (m *Manager) unregisterClient(client *Client) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	if _, exists := m.clients[client.UserID]; exists {
+		delete(m.clients, client.UserID)
+		close(client.Send)
+		log.Printf("Client unregistered: %s (UserID: %s)", client.ID, client.UserID)
+	}
+
+	if client.ChatRoom != "" {
+		if room, exists := m.chatRooms[client.ChatRoom]; exists {
+			delete(room, client.UserID)
+			if len(room) == 0 {
+				delete(m.chatRooms, client.ChatRoom)
+			}
+		}
+	}
+}
+
+func (m *Manager) broadcastMessage(message *BroadcastMessage) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	switch message.Type {
+	case "notification":
+		if client, exists := m.clients[message.UserID]; exists {
+			select {
+			case client.Send <- message.Message:
+			default:
+				log.Printf("Failed to send message to client %s", message.UserID)
+			}
+		}
+	case "chat":
+		if room, exists := m.chatRooms[message.ChatID]; exists {
+			for _, client := range room {
+				select {
+				case client.Send <- message.Message:
+				default:
+					log.Printf("Failed to send message to client %s in chat %s", client.UserID, message.ChatID)
+				}
+			}
+		}
+	}
+}
+
+func (m *Manager) SendToUser(userID string, message []byte) {
+	m.broadcast <- &BroadcastMessage{
+		UserID:  userID,
+		Message: message,
+		Type:    "notification",
+	}
+}
+
+func (m *Manager) SendToChat(chatID string, message []byte) {
+	m.broadcast <- &BroadcastMessage{
+		ChatID:  chatID,
+		Message: message,
+		Type:    "chat",
+	}
+}
+
+func (m *Manager) AddClientToChat(client *Client, chatID string) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	if _, exists := m.chatRooms[chatID]; !exists {
+		m.chatRooms[chatID] = make(map[string]*Client)
+	}
+
+	m.chatRooms[chatID][client.UserID] = client
+	client.ChatRoom = chatID
+	log.Printf("Client %s added to chat room %s", client.UserID, chatID)
+}
+
+func (m *Manager) IsUserOnline(userID string) bool {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	_, exists := m.clients[userID]
+	return exists
+}
+
+func (m *Manager) GetOnlineUsersCount() int {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	return len(m.clients)
+}

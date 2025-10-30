@@ -6,10 +6,13 @@ import (
 	"github.com/relaunch-cot/bff-relaunch/config"
 	"github.com/relaunch-cot/bff-relaunch/resource"
 	"github.com/relaunch-cot/bff-relaunch/routes"
+	"github.com/relaunch-cot/bff-relaunch/websocket"
 )
 
 func main() {
 	resource.Inject()
+
+	websocket.InitializeWebSocket()
 
 	r := gin.Default()
 

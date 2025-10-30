@@ -7,6 +7,7 @@ import (
 	"github.com/relaunch-cot/bff-relaunch/handler"
 	params "github.com/relaunch-cot/bff-relaunch/params/notification"
 	"github.com/relaunch-cot/bff-relaunch/resource/transformer"
+	"github.com/relaunch-cot/bff-relaunch/websocket"
 	"github.com/relaunch-cot/lib-relaunch-cot/pkg/httpresponse"
 	validate "github.com/relaunch-cot/lib-relaunch-cot/validate/notification"
 )
@@ -51,6 +52,17 @@ func (r *resource) SendNotification(c *gin.Context) {
 		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
 		return
 	}
+
+	go func() {
+		notification := map[string]interface{}{
+			"senderId":   senderId,
+			"receiverId": in.ReceiverId,
+			"title":      in.Title,
+			"content":    in.Content,
+			"type":       in.Type,
+		}
+		websocket.SendNewNotification(in.ReceiverId, notification)
+	}()
 
 	c.JSON(http.StatusOK, gin.H{"message": "notification sent successfully"})
 }
@@ -109,7 +121,7 @@ func (r *resource) DeleteNotification(c *gin.Context) {
 		return
 	}
 
-	deleteNotificationRequest, err := transformer.DeleteNotificationToProto(notificationId)
+	getNotificationRequest, err := transformer.GetNotificationToProto(notificationId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
 		return
@@ -117,10 +129,28 @@ func (r *resource) DeleteNotification(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
+	getNotificationResponse, err := r.handler.Notification.GetNotification(&ctx, getNotificationRequest)
+	var userId string
+	if err == nil && getNotificationResponse != nil {
+		userId = getNotificationResponse.Notification.ReceiverId
+	}
+
+	deleteNotificationRequest, err := transformer.DeleteNotificationToProto(notificationId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
+	}
+
 	err = r.handler.Notification.DeleteNotification(&ctx, deleteNotificationRequest)
 	if err != nil {
 		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
 		return
+	}
+
+	if userId != "" {
+		go func() {
+			websocket.SendNotificationDeleted(userId, notificationId)
+		}()
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "notification deleted successfully"})

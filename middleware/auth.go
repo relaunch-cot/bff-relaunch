@@ -35,7 +35,6 @@ func ValidateUserToken(c *gin.Context) {
 
 	claims := jwt.MapClaims{}
 	token, err := jwt.ParseWithClaims(tokenString, &claims, func(token *jwt.Token) (interface{}, error) {
-		// garantir método de assinatura esperado
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, status.Error(http.StatusInternalServerError, "unexpected signing method")
 		}
@@ -57,7 +56,6 @@ func ValidateUserToken(c *gin.Context) {
 		return
 	}
 
-	// coloca userId no contexto para handlers subsequentes
 	c.Set("userId", userId)
 	c.Next()
 }

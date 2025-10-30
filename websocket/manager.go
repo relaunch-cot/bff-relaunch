@@ -1,6 +1,7 @@
 package websocket
 
 import (
+	"encoding/json"
 	"log"
 	"sync"
 
@@ -66,7 +67,6 @@ func (m *Manager) Run() {
 
 func (m *Manager) registerClient(client *Client) {
 	m.mu.Lock()
-	defer m.mu.Unlock()
 
 	if existingClient, exists := m.clients[client.UserID]; exists {
 		existingClient.closeChannel()
@@ -77,18 +77,29 @@ func (m *Manager) registerClient(client *Client) {
 	m.clients[client.UserID] = client
 	log.Printf("Client registered: %s (UserID: %s)", client.ID, client.UserID)
 
+	shouldNotifyStatus := false
+	var chatRoomToNotify string
+
 	if client.ChatRoom != "" {
 		if _, exists := m.chatRooms[client.ChatRoom]; !exists {
 			m.chatRooms[client.ChatRoom] = make(map[string]*Client)
 		}
 		m.chatRooms[client.ChatRoom][client.UserID] = client
 		log.Printf("Client %s added to chat room %s", client.UserID, client.ChatRoom)
+
+		shouldNotifyStatus = true
+		chatRoomToNotify = client.ChatRoom
+	}
+
+	m.mu.Unlock()
+
+	if shouldNotifyStatus {
+		m.notifyUserStatus(chatRoomToNotify, client.UserID, true, client.UserID)
 	}
 }
 
 func (m *Manager) unregisterClient(client *Client) {
 	m.mu.Lock()
-	defer m.mu.Unlock()
 
 	if _, exists := m.clients[client.UserID]; exists {
 		delete(m.clients, client.UserID)
@@ -103,7 +114,15 @@ func (m *Manager) unregisterClient(client *Client) {
 				delete(m.chatRooms, client.ChatRoom)
 			}
 		}
+
+		chatRoom := client.ChatRoom
+		userID := client.UserID
+		m.mu.Unlock()
+		m.notifyUserStatus(chatRoom, userID, false, userID)
+		return
 	}
+
+	m.mu.Unlock()
 }
 
 func (m *Manager) broadcastMessage(message *BroadcastMessage) {
@@ -184,4 +203,91 @@ func (c *Client) closeChannel() {
 		close(c.Send)
 		c.closed = true
 	}
+}
+
+func (m *Manager) notifyUserStatus(chatID, userID string, isOnline bool, excludeUserID string) {
+	m.mu.RLock()
+	room, exists := m.chatRooms[chatID]
+	if !exists {
+		m.mu.RUnlock()
+		return
+	}
+
+	statusMsg := map[string]interface{}{
+		"type":     "USER_STATUS",
+		"userId":   userID,
+		"isOnline": isOnline,
+		"chatId":   chatID,
+	}
+
+	data, err := json.Marshal(statusMsg)
+	if err != nil {
+		m.mu.RUnlock()
+		log.Printf("Error marshaling user status: %v", err)
+		return
+	}
+
+	for _, client := range room {
+		if client.UserID != excludeUserID {
+			select {
+			case client.Send <- data:
+				log.Printf("User status sent: %s is %v in chat %s", userID, isOnline, chatID)
+			default:
+				log.Printf("Failed to send user status to client %s", client.UserID)
+			}
+		}
+	}
+	m.mu.RUnlock()
+}
+
+func (m *Manager) SendTypingIndicatorToChat(chatID, userID string, isTyping bool) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	room, exists := m.chatRooms[chatID]
+	if !exists {
+		return
+	}
+
+	typingMsg := map[string]interface{}{
+		"type":     "USER_TYPING",
+		"userId":   userID,
+		"isTyping": isTyping,
+		"chatId":   chatID,
+	}
+
+	data, err := json.Marshal(typingMsg)
+	if err != nil {
+		log.Printf("Error marshaling typing indicator: %v", err)
+		return
+	}
+
+	for _, client := range room {
+		if client.UserID != userID {
+			select {
+			case client.Send <- data:
+			default:
+				log.Printf("Failed to send typing indicator to client %s", client.UserID)
+			}
+		}
+	}
+}
+
+func (m *Manager) GetChatParticipants(chatID string) []string {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	room, exists := m.chatRooms[chatID]
+	if !exists {
+		log.Printf("⚠️ Chat room '%s' not found. Total rooms: %d", chatID, len(m.chatRooms))
+		return []string{}
+	}
+
+	participants := make([]string, 0, len(room))
+	for userID := range room {
+		participants = append(participants, userID)
+	}
+
+	log.Printf("✅ Chat room '%s' has %d participants: %v", chatID, len(participants), participants)
+	return participants
 }

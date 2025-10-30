@@ -110,21 +110,15 @@ func (c *Client) handleMessage(data []byte) {
 		}
 
 	case "TYPING":
+		// Indicador de digitação - broadcast para outros no chat
 		if c.ChatRoom != "" {
 			isTyping := true
 			if typing, ok := msg.Data["isTyping"].(bool); ok {
 				isTyping = typing
 			}
 
-			typingMsg := map[string]interface{}{
-				"type":     "TYPING_INDICATOR",
-				"chatId":   c.ChatRoom,
-				"userId":   c.UserID,
-				"isTyping": isTyping,
-			}
-
-			typingData, _ := json.Marshal(typingMsg)
-			c.Manager.SendToChat(c.ChatRoom, typingData)
+			// Usar a função específica que envia como USER_TYPING
+			c.Manager.SendTypingIndicatorToChat(c.ChatRoom, c.UserID, isTyping)
 			log.Printf("Typing indicator from user %s in chat %s (typing: %v)", c.UserID, c.ChatRoom, isTyping)
 		}
 

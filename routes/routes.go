@@ -26,7 +26,7 @@ func AddRoutes(r *gin.RouterGroup) {
 	chat.POST("/send-message/:senderId", middleware.ValidateUserToken, resource.Servers.Chat.SendMessage)
 	chat.GET("/messages/:chatId", middleware.ValidateUserToken, resource.Servers.Chat.GetAllMessagesFromChat)
 	chat.GET("/:userId", middleware.ValidateUserToken, resource.Servers.Chat.GetAllChatsFromUser)
-	chat.GET("", middleware.ValidateUserToken, resource.Servers.Chat.GetChatFromUsers)
+	chat.GET("/users", middleware.ValidateUserToken, resource.Servers.Chat.GetChatFromUsers)
 
 	project := v1.Group("/project")
 	project.POST("/:userId", middleware.ValidateUserToken, resource.Servers.Project.CreateProject)

@@ -16,8 +16,8 @@ type ChatMessage struct {
 }
 
 func SendNewNotification(userID string, notification map[string]interface{}) {
-	if WSManager == nil {
-		log.Println("WebSocket manager not initialized")
+	if NotificationManager == nil {
+		log.Println("NotificationManager not initialized")
 		return
 	}
 
@@ -32,13 +32,13 @@ func SendNewNotification(userID string, notification map[string]interface{}) {
 		return
 	}
 
-	WSManager.SendToUser(userID, data)
+	NotificationManager.SendToUser(userID, data)
 	log.Printf("Notification sent to user %s via WebSocket", userID)
 }
 
 func SendNotificationDeleted(userID string, notificationID string) {
-	if WSManager == nil {
-		log.Println("WebSocket manager not initialized")
+	if NotificationManager == nil {
+		log.Println("NotificationManager not initialized")
 		return
 	}
 
@@ -53,13 +53,13 @@ func SendNotificationDeleted(userID string, notificationID string) {
 		return
 	}
 
-	WSManager.SendToUser(userID, data)
+	NotificationManager.SendToUser(userID, data)
 	log.Printf("Notification deleted sent to user %s via WebSocket", userID)
 }
 
 func SendBadgeUpdate(userID string, count int) {
-	if WSManager == nil {
-		log.Println("WebSocket manager not initialized")
+	if NotificationManager == nil {
+		log.Println("NotificationManager not initialized")
 		return
 	}
 
@@ -74,13 +74,13 @@ func SendBadgeUpdate(userID string, count int) {
 		return
 	}
 
-	WSManager.SendToUser(userID, data)
+	NotificationManager.SendToUser(userID, data)
 	log.Printf("Badge update sent to user %s via WebSocket", userID)
 }
 
 func SendNewChatMessage(chatID string, message map[string]interface{}) {
-	if WSManager == nil {
-		log.Println("WebSocket manager not initialized")
+	if ChatManager == nil {
+		log.Println("ChatManager not initialized")
 		return
 	}
 
@@ -95,13 +95,13 @@ func SendNewChatMessage(chatID string, message map[string]interface{}) {
 		return
 	}
 
-	WSManager.SendToChat(chatID, data)
+	ChatManager.SendToChat(chatID, data)
 	log.Printf("Chat message sent to chat %s via WebSocket", chatID)
 }
 
 func SendTypingIndicator(chatID string, userID string, isTyping bool) {
-	if WSManager == nil {
-		log.Println("WebSocket manager not initialized")
+	if ChatManager == nil {
+		log.Println("ChatManager not initialized")
 		return
 	}
 
@@ -118,12 +118,19 @@ func SendTypingIndicator(chatID string, userID string, isTyping bool) {
 		return
 	}
 
-	WSManager.SendToChat(chatID, data)
+	ChatManager.SendToChat(chatID, data)
 }
 
 func IsUserOnline(userID string) bool {
-	if WSManager == nil {
+	if NotificationManager == nil {
 		return false
 	}
-	return WSManager.IsUserOnline(userID)
+	return NotificationManager.IsUserOnline(userID)
+}
+
+func IsUserOnlineInChat(userID string) bool {
+	if ChatManager == nil {
+		return false
+	}
+	return ChatManager.IsUserOnline(userID)
 }

@@ -109,6 +109,37 @@ func (c *Client) handleMessage(data []byte) {
 			c.Manager.AddClientToChat(c, chatID)
 		}
 
+	case "TYPING":
+		if c.ChatRoom != "" {
+			isTyping := true
+			if typing, ok := msg.Data["isTyping"].(bool); ok {
+				isTyping = typing
+			}
+
+			typingMsg := map[string]interface{}{
+				"type":     "TYPING_INDICATOR",
+				"chatId":   c.ChatRoom,
+				"userId":   c.UserID,
+				"isTyping": isTyping,
+			}
+
+			typingData, _ := json.Marshal(typingMsg)
+			c.Manager.SendToChat(c.ChatRoom, typingData)
+			log.Printf("Typing indicator from user %s in chat %s (typing: %v)", c.UserID, c.ChatRoom, isTyping)
+		}
+
+	case "SEND_MESSAGE":
+		log.Printf("Received SEND_MESSAGE from user %s - messages should be sent via REST API", c.UserID)
+
+		response := Message{
+			Type: "ERROR",
+			Data: map[string]interface{}{
+				"message": "Use POST /v1/chat/send-message/:senderId to send messages",
+				"code":    "USE_REST_API",
+			},
+		}
+		c.sendMessage(response)
+
 	default:
 		log.Printf("Unknown message type: %s", msg.Type)
 	}

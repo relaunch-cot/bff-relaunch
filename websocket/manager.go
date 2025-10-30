@@ -14,6 +14,8 @@ type Client struct {
 	Send     chan []byte
 	Manager  *Manager
 	ChatRoom string
+	closed   bool
+	mu       sync.Mutex
 }
 
 type Manager struct {
@@ -67,12 +69,21 @@ func (m *Manager) registerClient(client *Client) {
 	defer m.mu.Unlock()
 
 	if existingClient, exists := m.clients[client.UserID]; exists {
-		close(existingClient.Send)
+		existingClient.closeChannel()
 		existingClient.Conn.Close()
+		log.Printf("Disconnecting existing client: %s (UserID: %s)", existingClient.ID, existingClient.UserID)
 	}
 
 	m.clients[client.UserID] = client
 	log.Printf("Client registered: %s (UserID: %s)", client.ID, client.UserID)
+
+	if client.ChatRoom != "" {
+		if _, exists := m.chatRooms[client.ChatRoom]; !exists {
+			m.chatRooms[client.ChatRoom] = make(map[string]*Client)
+		}
+		m.chatRooms[client.ChatRoom][client.UserID] = client
+		log.Printf("Client %s added to chat room %s", client.UserID, client.ChatRoom)
+	}
 }
 
 func (m *Manager) unregisterClient(client *Client) {
@@ -81,7 +92,7 @@ func (m *Manager) unregisterClient(client *Client) {
 
 	if _, exists := m.clients[client.UserID]; exists {
 		delete(m.clients, client.UserID)
-		close(client.Send)
+		client.closeChannel()
 		log.Printf("Client unregistered: %s (UserID: %s)", client.ID, client.UserID)
 	}
 
@@ -163,4 +174,14 @@ func (m *Manager) GetOnlineUsersCount() int {
 	defer m.mu.RUnlock()
 
 	return len(m.clients)
+}
+
+func (c *Client) closeChannel() {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	if !c.closed {
+		close(c.Send)
+		c.closed = true
+	}
 }

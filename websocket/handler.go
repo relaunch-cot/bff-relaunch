@@ -97,7 +97,11 @@ func HandleWebSocketNotifications(manager *Manager) gin.HandlerFunc {
 			"userId":  userId,
 		}
 		welcomeData, _ := json.Marshal(welcomeMsg)
-		client.Send <- welcomeData
+		select {
+		case client.Send <- welcomeData:
+		default:
+			log.Printf("Failed to send welcome message to client %s", userId)
+		}
 
 		go client.WritePump()
 		go client.ReadPump()
@@ -125,6 +129,8 @@ func HandleWebSocketChat(manager *Manager) gin.HandlerFunc {
 			return
 		}
 
+		log.Printf("WebSocket upgrade request from userId=%s to chatId=%s from IP=%s", userId, chatId, c.ClientIP())
+
 		conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 		if err != nil {
 			log.Printf("Failed to upgrade connection: %v", err)
@@ -132,16 +138,15 @@ func HandleWebSocketChat(manager *Manager) gin.HandlerFunc {
 		}
 
 		client := &Client{
-			ID:      generateClientID(),
-			UserID:  userId,
-			Conn:    conn,
-			Send:    make(chan []byte, 256),
-			Manager: manager,
+			ID:       generateClientID(),
+			UserID:   userId,
+			Conn:     conn,
+			Send:     make(chan []byte, 256),
+			Manager:  manager,
+			ChatRoom: chatId,
 		}
 
 		manager.register <- client
-
-		manager.AddClientToChat(client, chatId)
 
 		welcomeMsg := map[string]interface{}{
 			"type":    "CONNECTED",
@@ -150,7 +155,11 @@ func HandleWebSocketChat(manager *Manager) gin.HandlerFunc {
 			"chatId":  chatId,
 		}
 		welcomeData, _ := json.Marshal(welcomeMsg)
-		client.Send <- welcomeData
+		select {
+		case client.Send <- welcomeData:
+		default:
+			log.Printf("Failed to send welcome message to client %s", userId)
+		}
 
 		go client.WritePump()
 		go client.ReadPump()

@@ -13,6 +13,7 @@ func AddRoutes(r *gin.RouterGroup) {
 	ws := v1.Group("/ws")
 	ws.GET("/notifications", websocket.HandleWebSocketNotifications(websocket.NotificationManager))
 	ws.GET("/chat", websocket.HandleWebSocketChat(websocket.ChatManager))
+	ws.GET("/presence", websocket.HandleWebSocketPresence(websocket.PresenceManager))
 
 	user := v1.Group("/user")
 	user.POST("/register", resource.Servers.User.CreateUser)

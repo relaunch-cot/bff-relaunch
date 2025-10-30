@@ -110,7 +110,6 @@ func (c *Client) handleMessage(data []byte) {
 		}
 
 	case "TYPING":
-		// Indicador de digitação - broadcast para outros no chat
 		if c.ChatRoom != "" {
 			isTyping := true
 			if typing, ok := msg.Data["isTyping"].(bool); ok {

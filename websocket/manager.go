@@ -79,6 +79,7 @@ func (m *Manager) registerClient(client *Client) {
 
 	shouldNotifyStatus := false
 	var chatRoomToNotify string
+	isPresenceConnection := client.ChatRoom == "" && client.Manager == PresenceManager
 
 	if client.ChatRoom != "" {
 		if _, exists := m.chatRooms[client.ChatRoom]; !exists {
@@ -95,8 +96,12 @@ func (m *Manager) registerClient(client *Client) {
 
 	if shouldNotifyStatus {
 		m.sendExistingParticipantsStatus(client, chatRoomToNotify)
-
 		m.notifyUserStatus(chatRoomToNotify, client.UserID, true, client.UserID)
+	}
+
+	if isPresenceConnection {
+		m.sendOnlineUsersToClient(client)
+		m.broadcastUserPresence(client.UserID, true, client.UserID)
 	}
 }
 
@@ -108,6 +113,8 @@ func (m *Manager) unregisterClient(client *Client) {
 		client.closeChannel()
 		log.Printf("Client unregistered: %s (UserID: %s)", client.ID, client.UserID)
 	}
+
+	isPresenceConnection := client.ChatRoom == "" && client.Manager == PresenceManager
 
 	if client.ChatRoom != "" {
 		if room, exists := m.chatRooms[client.ChatRoom]; exists {
@@ -125,6 +132,10 @@ func (m *Manager) unregisterClient(client *Client) {
 	}
 
 	m.mu.Unlock()
+
+	if isPresenceConnection {
+		m.broadcastUserPresence(client.UserID, false, client.UserID)
+	}
 }
 
 func (m *Manager) broadcastMessage(message *BroadcastMessage) {
@@ -331,6 +342,62 @@ func (m *Manager) sendExistingParticipantsStatus(newClient *Client, chatID strin
 				log.Printf("Sent existing participant status: %s is online in chat %s (to new client %s)", userID, chatID, newClient.UserID)
 			default:
 				log.Printf("Failed to send existing participant status to new client %s", newClient.UserID)
+			}
+		}
+	}
+}
+
+func (m *Manager) sendOnlineUsersToClient(client *Client) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	onlineUsers := make([]string, 0, len(m.clients))
+	for userID := range m.clients {
+		onlineUsers = append(onlineUsers, userID)
+	}
+
+	userListMsg := map[string]interface{}{
+		"type":        "ONLINE_USERS",
+		"onlineUsers": onlineUsers,
+	}
+
+	data, err := json.Marshal(userListMsg)
+	if err != nil {
+		log.Printf("Error marshaling online users list: %v", err)
+		return
+	}
+
+	select {
+	case client.Send <- data:
+		log.Printf("Sent online users list to client %s", client.UserID)
+	default:
+		log.Printf("Failed to send online users list to client %s", client.UserID)
+	}
+}
+
+func (m *Manager) broadcastUserPresence(userID string, isOnline bool, excludeUserID string) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	for _, client := range m.clients {
+		if client.UserID != excludeUserID {
+			statusMsg := map[string]interface{}{
+				"type":     "USER_STATUS",
+				"userId":   userID,
+				"isOnline": isOnline,
+			}
+
+			data, err := json.Marshal(statusMsg)
+			if err != nil {
+				log.Printf("Error marshaling user presence status: %v", err)
+				continue
+			}
+
+			select {
+			case client.Send <- data:
+				log.Printf("Broadcasted user presence: %s is %v", userID, isOnline)
+			default:
+				log.Printf("Failed to broadcast user presence to client %s", client.UserID)
 			}
 		}
 	}

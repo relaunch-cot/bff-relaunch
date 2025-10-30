@@ -166,6 +166,55 @@ func HandleWebSocketChat(manager *Manager) gin.HandlerFunc {
 	}
 }
 
+func HandleWebSocketPresence(manager *Manager) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		token := c.Query("token")
+		if token == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"message": "token is required"})
+			return
+		}
+
+		userId, err := validateToken(token)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"message": "invalid token", "details": err.Error()})
+			return
+		}
+
+		log.Printf("WebSocket presence request from userId=%s from IP=%s", userId, c.ClientIP())
+
+		conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+		if err != nil {
+			log.Printf("Failed to upgrade connection: %v", err)
+			return
+		}
+
+		client := &Client{
+			ID:      generateClientID(),
+			UserID:  userId,
+			Conn:    conn,
+			Send:    make(chan []byte, 256),
+			Manager: manager,
+		}
+
+		manager.register <- client
+
+		welcomeMsg := map[string]interface{}{
+			"type":    "CONNECTED",
+			"message": "Connected to presence service",
+			"userId":  userId,
+		}
+		welcomeData, _ := json.Marshal(welcomeMsg)
+		select {
+		case client.Send <- welcomeData:
+		default:
+			log.Printf("Failed to send welcome message to client %s", userId)
+		}
+
+		go client.WritePump()
+		go client.ReadPump()
+	}
+}
+
 func generateClientID() string {
 	timestamp := time.Now().UnixNano()
 	randomBytes := make([]byte, 8)

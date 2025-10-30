@@ -117,7 +117,6 @@ func (c *Client) handleMessage(data []byte) {
 				isTyping = typing
 			}
 
-			// Usar a função específica que envia como USER_TYPING
 			c.Manager.SendTypingIndicatorToChat(c.ChatRoom, c.UserID, isTyping)
 			log.Printf("Typing indicator from user %s in chat %s (typing: %v)", c.UserID, c.ChatRoom, isTyping)
 		}

@@ -94,6 +94,8 @@ func (m *Manager) registerClient(client *Client) {
 	m.mu.Unlock()
 
 	if shouldNotifyStatus {
+		m.sendExistingParticipantsStatus(client, chatRoomToNotify)
+
 		m.notifyUserStatus(chatRoomToNotify, client.UserID, true, client.UserID)
 	}
 }
@@ -246,6 +248,7 @@ func (m *Manager) SendTypingIndicatorToChat(chatID, userID string, isTyping bool
 
 	room, exists := m.chatRooms[chatID]
 	if !exists {
+		log.Printf("Chat room '%s' not found when sending typing indicator", chatID)
 		return
 	}
 
@@ -262,14 +265,21 @@ func (m *Manager) SendTypingIndicatorToChat(chatID, userID string, isTyping bool
 		return
 	}
 
+	sentCount := 0
 	for _, client := range room {
 		if client.UserID != userID {
 			select {
 			case client.Send <- data:
+				sentCount++
+				log.Printf("Sent USER_TYPING to %s: user %s is typing: %v in chat %s", client.UserID, userID, isTyping, chatID)
 			default:
 				log.Printf("Failed to send typing indicator to client %s", client.UserID)
 			}
 		}
+	}
+
+	if sentCount == 0 {
+		log.Printf("No other participants to send typing indicator (chat %s, total in room: %d)", chatID, len(room))
 	}
 }
 
@@ -279,7 +289,7 @@ func (m *Manager) GetChatParticipants(chatID string) []string {
 
 	room, exists := m.chatRooms[chatID]
 	if !exists {
-		log.Printf("⚠️ Chat room '%s' not found. Total rooms: %d", chatID, len(m.chatRooms))
+		log.Printf("Chat room '%s' not found. Total rooms: %d", chatID, len(m.chatRooms))
 		return []string{}
 	}
 
@@ -288,6 +298,40 @@ func (m *Manager) GetChatParticipants(chatID string) []string {
 		participants = append(participants, userID)
 	}
 
-	log.Printf("✅ Chat room '%s' has %d participants: %v", chatID, len(participants), participants)
+	log.Printf("Chat room '%s' has %d participants: %v", chatID, len(participants), participants)
 	return participants
+}
+
+func (m *Manager) sendExistingParticipantsStatus(newClient *Client, chatID string) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	room, exists := m.chatRooms[chatID]
+	if !exists {
+		return
+	}
+
+	for userID := range room {
+		if userID != newClient.UserID {
+			statusMsg := map[string]interface{}{
+				"type":     "USER_STATUS",
+				"userId":   userID,
+				"isOnline": true,
+				"chatId":   chatID,
+			}
+
+			data, err := json.Marshal(statusMsg)
+			if err != nil {
+				log.Printf("Error marshaling existing participant status: %v", err)
+				continue
+			}
+
+			select {
+			case newClient.Send <- data:
+				log.Printf("Sent existing participant status: %s is online in chat %s (to new client %s)", userID, chatID, newClient.UserID)
+			default:
+				log.Printf("Failed to send existing participant status to new client %s", newClient.UserID)
+			}
+		}
+	}
 }

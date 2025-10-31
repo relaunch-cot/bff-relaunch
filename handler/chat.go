@@ -13,6 +13,7 @@ type IChat interface {
 	GetAllMessagesFromChat(ctx *context.Context, in *pb.GetAllMessagesFromChatRequest) (*pb.GetAllMessagesFromChatResponse, error)
 	GetAllChatsFromUser(ctx *context.Context, in *pb.GetAllChatsFromUserRequest) (*pb.GetAllChatsFromUserResponse, error)
 	GetChatFromUsers(ctx *context.Context, in *pb.GetChatFromUsersRequest) (*pb.GetChatFromUsersResponse, error)
+	GetChatById(ctx *context.Context, in *pb.GetChatByIdRequest) (*pb.GetChatByIdResponse, error)
 }
 
 type chatResource struct {
@@ -57,6 +58,15 @@ func (r *chatResource) GetAllChatsFromUser(ctx *context.Context, in *pb.GetAllCh
 
 func (r *chatResource) GetChatFromUsers(ctx *context.Context, in *pb.GetChatFromUsersRequest) (*pb.GetChatFromUsersResponse, error) {
 	response, err := r.grpc.ChatGRPC.GetChatFromUsers(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
+func (r *chatResource) GetChatById(ctx *context.Context, in *pb.GetChatByIdRequest) (*pb.GetChatByIdResponse, error) {
+	response, err := r.grpc.ChatGRPC.GetChatById(ctx, in)
 	if err != nil {
 		return nil, err
 	}

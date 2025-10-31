@@ -12,6 +12,7 @@ type IChatGRPC interface {
 	GetAllMessagesFromChat(ctx *context.Context, in *pb.GetAllMessagesFromChatRequest) (*pb.GetAllMessagesFromChatResponse, error)
 	GetAllChatsFromUser(ctx *context.Context, in *pb.GetAllChatsFromUserRequest) (*pb.GetAllChatsFromUserResponse, error)
 	GetChatFromUsers(ctx *context.Context, in *pb.GetChatFromUsersRequest) (*pb.GetChatFromUsersResponse, error)
+	GetChatById(ctx *context.Context, in *pb.GetChatByIdRequest) (*pb.GetChatByIdResponse, error)
 }
 
 type resource struct {
@@ -56,6 +57,15 @@ func (r *resource) GetAllChatsFromUser(ctx *context.Context, in *pb.GetAllChatsF
 
 func (r *resource) GetChatFromUsers(ctx *context.Context, in *pb.GetChatFromUsersRequest) (*pb.GetChatFromUsersResponse, error) {
 	response, err := r.grpcClient.GetChatFromUsers(*ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
+func (r *resource) GetChatById(ctx *context.Context, in *pb.GetChatByIdRequest) (*pb.GetChatByIdResponse, error) {
+	response, err := r.grpcClient.GetChatById(*ctx, in)
 	if err != nil {
 		return nil, err
 	}

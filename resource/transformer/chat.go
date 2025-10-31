@@ -30,3 +30,7 @@ func GetChatFromUsersToProto(userIds []string) (*pb.GetChatFromUsersRequest, err
 		UserIds: userIds,
 	}, nil
 }
+
+func GetChatByIdToProto(chatId string) (*pb.GetChatByIdRequest, error) {
+	return &pb.GetChatByIdRequest{ChatId: chatId}, nil
+}

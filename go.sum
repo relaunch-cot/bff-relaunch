@@ -68,6 +68,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251025021826-e3c5922afbcc h1:aResRcow563c/5xfyIv1coaaoh3gbldjaKBrjssqgJU=
 github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251025021826-e3c5922afbcc/go.mod h1:AnBqPVRdO0Fr/Cscv1OszBA5hDJCM4LylAvj39riXws=
+github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251031191206-6a3b3b6c60f9 h1:hwB0kn7+ed4We6ddG+TX3bVg42Lgq79MPjOFQiRDX1Y=
+github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251031191206-6a3b3b6c60f9/go.mod h1:AnBqPVRdO0Fr/Cscv1OszBA5hDJCM4LylAvj39riXws=
 github.com/rogpeppe/go-internal v1.8.0 h1:FCbCCtXNOY3UtUuHUYaghJg4y7Fd14rXifAYUAtL9R8=
 github.com/rogpeppe/go-internal v1.8.0/go.mod h1:WmiCO8CzOY8rg0OYDC4/i/2WRWAB6poM+XZ2dLUbcbE=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=

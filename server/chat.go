@@ -17,6 +17,7 @@ type IChat interface {
 	GetAllMessagesFromChat(c *gin.Context)
 	GetAllChatsFromUser(c *gin.Context)
 	GetChatFromUsers(c *gin.Context)
+	GetChatById(c *gin.Context)
 }
 
 func (r *resource) CreateNewChat(c *gin.Context) {
@@ -167,6 +168,30 @@ func (r *resource) GetChatFromUsers(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, getChatFromUsersResponse)
+}
+
+func (r *resource) GetChatById(c *gin.Context) {
+	chatId := c.Param("chatId")
+	if chatId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "the path param chatId is required"})
+		return
+	}
+
+	getChatByIdRequest, err := transformer.GetChatByIdToProto(chatId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	getChatByIdResponse, err := r.handler.Chat.GetChatById(&ctx, getChatByIdRequest)
+	if err != nil {
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, getChatByIdResponse)
 }
 
 func NewChatServer(handler *handler.Handlers) IChat {

@@ -218,7 +218,7 @@ func (c *Client) closeChannel() {
 	}
 }
 
-func (m *Manager) notifyUserStatus(chatID, userID string, isOnline bool, excludeUserID string) {
+func (m *Manager) notifyUserStatus(chatID, userID string, isInChat bool, excludeUserID string) {
 	m.mu.RLock()
 	room, exists := m.chatRooms[chatID]
 	if !exists {
@@ -229,7 +229,7 @@ func (m *Manager) notifyUserStatus(chatID, userID string, isOnline bool, exclude
 	statusMsg := map[string]interface{}{
 		"type":     "USER_STATUS",
 		"userId":   userID,
-		"isOnline": isOnline,
+		"isInChat": isInChat,
 		"chatId":   chatID,
 	}
 
@@ -241,10 +241,10 @@ func (m *Manager) notifyUserStatus(chatID, userID string, isOnline bool, exclude
 	}
 
 	for _, client := range room {
-		if client.UserID != excludeUserID {
+		if client.UserID != excludeUserID && client.ChatRoom == chatID {
 			select {
 			case client.Send <- data:
-				log.Printf("User status sent: %s is %v in chat %s", userID, isOnline, chatID)
+				log.Printf("User status sent: %s isInChat=%v in chat %s to user %s", userID, isInChat, chatID, client.UserID)
 			default:
 				log.Printf("Failed to send user status to client %s", client.UserID)
 			}
@@ -322,12 +322,12 @@ func (m *Manager) sendExistingParticipantsStatus(newClient *Client, chatID strin
 		return
 	}
 
-	for userID := range room {
-		if userID != newClient.UserID {
+	for userID, existingClient := range room {
+		if userID != newClient.UserID && existingClient.ChatRoom == chatID {
 			statusMsg := map[string]interface{}{
 				"type":     "USER_STATUS",
 				"userId":   userID,
-				"isOnline": true,
+				"isInChat": true,
 				"chatId":   chatID,
 			}
 
@@ -339,7 +339,7 @@ func (m *Manager) sendExistingParticipantsStatus(newClient *Client, chatID strin
 
 			select {
 			case newClient.Send <- data:
-				log.Printf("Sent existing participant status: %s is online in chat %s (to new client %s)", userID, chatID, newClient.UserID)
+				log.Printf("Sent existing participant status: %s is in chat %s (to new client %s)", userID, chatID, newClient.UserID)
 			default:
 				log.Printf("Failed to send existing participant status to new client %s", newClient.UserID)
 			}

@@ -132,6 +132,35 @@ func (c *Client) handleMessage(data []byte) {
 		}
 		c.sendMessage(response)
 
+	case "SUBSCRIBE_PRESENCE":
+		if userIds, ok := msg.Data["userIds"].([]interface{}); ok {
+			targetUserIDs := make([]string, 0, len(userIds))
+			for _, uid := range userIds {
+				if userID, ok := uid.(string); ok {
+					targetUserIDs = append(targetUserIDs, userID)
+				}
+			}
+
+			if len(targetUserIDs) > 0 {
+				c.Manager.SubscribeToPresence(c.UserID, targetUserIDs)
+				c.Manager.SendPresenceStatusToClient(c, targetUserIDs)
+			}
+		}
+
+	case "UNSUBSCRIBE_PRESENCE":
+		if userIds, ok := msg.Data["userIds"].([]interface{}); ok {
+			targetUserIDs := make([]string, 0, len(userIds))
+			for _, uid := range userIds {
+				if userID, ok := uid.(string); ok {
+					targetUserIDs = append(targetUserIDs, userID)
+				}
+			}
+
+			if len(targetUserIDs) > 0 {
+				c.Manager.UnsubscribeFromPresence(c.UserID, targetUserIDs)
+			}
+		}
+
 	default:
 		log.Printf("Unknown message type: %s", msg.Type)
 	}

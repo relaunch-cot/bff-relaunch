@@ -24,6 +24,8 @@ type Manager struct {
 
 	chatRooms map[string]map[string]*Client
 
+	subscriptions map[string]map[string]bool
+
 	register chan *Client
 
 	unregister chan *Client
@@ -42,11 +44,12 @@ type BroadcastMessage struct {
 
 func NewManager() *Manager {
 	return &Manager{
-		clients:    make(map[string]*Client),
-		chatRooms:  make(map[string]map[string]*Client),
-		register:   make(chan *Client),
-		unregister: make(chan *Client),
-		broadcast:  make(chan *BroadcastMessage, 256),
+		clients:       make(map[string]*Client),
+		chatRooms:     make(map[string]map[string]*Client),
+		subscriptions: make(map[string]map[string]bool),
+		register:      make(chan *Client),
+		unregister:    make(chan *Client),
+		broadcast:     make(chan *BroadcastMessage, 256),
 	}
 }
 
@@ -100,7 +103,6 @@ func (m *Manager) registerClient(client *Client) {
 	}
 
 	if isPresenceConnection {
-		m.sendOnlineUsersToClient(client)
 		m.broadcastUserPresence(client.UserID, true, client.UserID)
 	}
 }
@@ -134,6 +136,7 @@ func (m *Manager) unregisterClient(client *Client) {
 	m.mu.Unlock()
 
 	if isPresenceConnection {
+		m.UnsubscribeFromAll(client.UserID)
 		m.broadcastUserPresence(client.UserID, false, client.UserID)
 	}
 }
@@ -347,31 +350,78 @@ func (m *Manager) sendExistingParticipantsStatus(newClient *Client, chatID strin
 	}
 }
 
-func (m *Manager) sendOnlineUsersToClient(client *Client) {
+func (m *Manager) SubscribeToPresence(observerUserID string, targetUserIDs []string) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	for _, targetUserID := range targetUserIDs {
+		if m.subscriptions[targetUserID] == nil {
+			m.subscriptions[targetUserID] = make(map[string]bool)
+		}
+		m.subscriptions[targetUserID][observerUserID] = true
+	}
+
+	log.Printf("User %s subscribed to presence of %d users", observerUserID, len(targetUserIDs))
+}
+
+func (m *Manager) UnsubscribeFromPresence(observerUserID string, targetUserIDs []string) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	for _, targetUserID := range targetUserIDs {
+		if observers, exists := m.subscriptions[targetUserID]; exists {
+			delete(observers, observerUserID)
+			if len(observers) == 0 {
+				delete(m.subscriptions, targetUserID)
+			}
+		}
+	}
+
+	log.Printf("User %s unsubscribed from presence of %d users", observerUserID, len(targetUserIDs))
+}
+
+func (m *Manager) UnsubscribeFromAll(observerUserID string) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	for targetUserID, observers := range m.subscriptions {
+		delete(observers, observerUserID)
+		if len(observers) == 0 {
+			delete(m.subscriptions, targetUserID)
+		}
+	}
+
+	log.Printf("User %s unsubscribed from all presence", observerUserID)
+}
+
+func (m *Manager) SendPresenceStatusToClient(client *Client, targetUserIDs []string) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
-	onlineUsers := make([]string, 0, len(m.clients))
-	for userID := range m.clients {
-		onlineUsers = append(onlineUsers, userID)
-	}
+	for _, targetUserID := range targetUserIDs {
+		isOnline := false
+		if _, exists := m.clients[targetUserID]; exists {
+			isOnline = true
+		}
 
-	userListMsg := map[string]interface{}{
-		"type":        "ONLINE_USERS",
-		"onlineUsers": onlineUsers,
-	}
+		statusMsg := map[string]interface{}{
+			"type":     "USER_ONLINE",
+			"userId":   targetUserID,
+			"isOnline": isOnline,
+		}
 
-	data, err := json.Marshal(userListMsg)
-	if err != nil {
-		log.Printf("Error marshaling online users list: %v", err)
-		return
-	}
+		data, err := json.Marshal(statusMsg)
+		if err != nil {
+			log.Printf("Error marshaling presence status: %v", err)
+			continue
+		}
 
-	select {
-	case client.Send <- data:
-		log.Printf("Sent online users list to client %s", client.UserID)
-	default:
-		log.Printf("Failed to send online users list to client %s", client.UserID)
+		select {
+		case client.Send <- data:
+			log.Printf("Sent initial presence status: %s is %v to %s", targetUserID, isOnline, client.UserID)
+		default:
+			log.Printf("Failed to send initial presence status to client %s", client.UserID)
+		}
 	}
 }
 
@@ -379,25 +429,32 @@ func (m *Manager) broadcastUserPresence(userID string, isOnline bool, excludeUse
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
-	for _, client := range m.clients {
-		if client.UserID != excludeUserID {
-			statusMsg := map[string]interface{}{
-				"type":     "USER_STATUS",
-				"userId":   userID,
-				"isOnline": isOnline,
-			}
+	observers, hasObservers := m.subscriptions[userID]
+	if !hasObservers || len(observers) == 0 {
+		return
+	}
 
-			data, err := json.Marshal(statusMsg)
-			if err != nil {
-				log.Printf("Error marshaling user presence status: %v", err)
-				continue
-			}
+	statusMsg := map[string]interface{}{
+		"type":     "USER_ONLINE",
+		"userId":   userID,
+		"isOnline": isOnline,
+	}
 
-			select {
-			case client.Send <- data:
-				log.Printf("Broadcasted user presence: %s is %v", userID, isOnline)
-			default:
-				log.Printf("Failed to broadcast user presence to client %s", client.UserID)
+	data, err := json.Marshal(statusMsg)
+	if err != nil {
+		log.Printf("Error marshaling user presence status: %v", err)
+		return
+	}
+
+	for observerUserID := range observers {
+		if observerUserID != excludeUserID {
+			if client, exists := m.clients[observerUserID]; exists {
+				select {
+				case client.Send <- data:
+					log.Printf("Sent presence update: %s is %v to observer %s", userID, isOnline, observerUserID)
+				default:
+					log.Printf("Failed to send presence update to observer %s", observerUserID)
+				}
 			}
 		}
 	}

@@ -122,10 +122,10 @@ func SendTypingIndicator(chatID string, userID string, isTyping bool) {
 }
 
 func IsUserOnline(userID string) bool {
-	if NotificationManager == nil {
+	if PresenceManager == nil {
 		return false
 	}
-	return NotificationManager.IsUserOnline(userID)
+	return PresenceManager.IsUserOnline(userID)
 }
 
 func IsUserOnlineInChat(userID string) bool {

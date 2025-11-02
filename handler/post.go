@@ -9,6 +9,8 @@ import (
 
 type IPost interface {
 	CreatePost(ctx *context.Context, in *pb.CreatePostRequest) error
+	GetPost(ctx *context.Context, in *pb.GetPostRequest) (*pb.GetPostResponse, error)
+	GetAllPosts(ctx *context.Context) (*pb.GetAllPostsResponse, error)
 }
 
 type postResource struct {
@@ -22,6 +24,24 @@ func (r *postResource) CreatePost(ctx *context.Context, in *pb.CreatePostRequest
 	}
 
 	return nil
+}
+
+func (r *postResource) GetPost(ctx *context.Context, in *pb.GetPostRequest) (*pb.GetPostResponse, error) {
+	getPostResponse, err := r.grpcClient.PostGRPC.GetPost(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return getPostResponse, nil
+}
+
+func (r *postResource) GetAllPosts(ctx *context.Context) (*pb.GetAllPostsResponse, error) {
+	getAllPostsResponse, err := r.grpcClient.PostGRPC.GetAllPosts(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return getAllPostsResponse, nil
 }
 
 func NewPostHandler(grpcClient *grpc.Grpc) IPost {

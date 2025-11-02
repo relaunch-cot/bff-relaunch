@@ -11,3 +11,9 @@ func CreatePostToProto(userId, title, content, postType, urlImagePost string) (*
 		UrlImagePost: urlImagePost,
 	}, nil
 }
+
+func GetPostToProto(postId string) (*pbPost.GetPostRequest, error) {
+	return &pbPost.GetPostRequest{
+		PostId: postId,
+	}, nil
+}

@@ -12,6 +12,8 @@ import (
 
 type IPost interface {
 	CreatePost(c *gin.Context)
+	GetPost(c *gin.Context)
+	GetAllPosts(ctx *gin.Context)
 }
 
 func (r *resource) CreatePost(c *gin.Context) {
@@ -43,6 +45,42 @@ func (r *resource) CreatePost(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"message": "post created successfully"})
+}
+
+func (r *resource) GetPost(c *gin.Context) {
+	postId := c.Param("postId")
+	if postId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "postId is required"})
+		return
+	}
+
+	getPostRequest, err := transformer.GetPostToProto(postId)
+	if err != nil {
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	response, err := r.handler.Post.GetPost(&ctx, getPostRequest)
+	if err != nil {
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
+}
+
+func (r *resource) GetAllPosts(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	response, err := r.handler.Post.GetAllPosts(&ctx)
+	if err != nil {
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
 }
 
 func NewPostServer(handler *handler.Handlers) IPost {

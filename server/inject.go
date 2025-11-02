@@ -9,6 +9,7 @@ type Servers struct {
 	Chat         IChat
 	Project      IProject
 	Notification INotification
+	Post         IPost
 }
 
 type resource struct {
@@ -20,4 +21,5 @@ func (c *Servers) Inject(handler *handler.Handlers) {
 	c.Chat = NewChatServer(handler)
 	c.Project = NewProjectServer(handler)
 	c.Notification = NewNotificationServer(handler)
+	c.Post = NewPostServer(handler)
 }

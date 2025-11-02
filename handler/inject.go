@@ -7,6 +7,7 @@ type Handlers struct {
 	Chat         IChat
 	Project      IProject
 	Notification INotification
+	Post         IPost
 }
 
 func (c *Handlers) Inject(grpc *grpc.Grpc) {
@@ -14,4 +15,5 @@ func (c *Handlers) Inject(grpc *grpc.Grpc) {
 	c.Chat = NewChatHandler(grpc)
 	c.Project = NewProjectHandler(grpc)
 	c.Notification = NewNotificationHandler(grpc)
+	c.Post = NewPostHandler(grpc)
 }

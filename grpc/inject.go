@@ -3,10 +3,12 @@ package grpc
 import (
 	"github.com/relaunch-cot/bff-relaunch/grpc/chat"
 	"github.com/relaunch-cot/bff-relaunch/grpc/notification"
+	"github.com/relaunch-cot/bff-relaunch/grpc/post"
 	"github.com/relaunch-cot/bff-relaunch/grpc/project"
 	"github.com/relaunch-cot/bff-relaunch/grpc/user"
 	pbChat "github.com/relaunch-cot/lib-relaunch-cot/proto/chat"
 	pbNotification "github.com/relaunch-cot/lib-relaunch-cot/proto/notification"
+	pbPost "github.com/relaunch-cot/lib-relaunch-cot/proto/post"
 	pbProject "github.com/relaunch-cot/lib-relaunch-cot/proto/project"
 	pbUser "github.com/relaunch-cot/lib-relaunch-cot/proto/user"
 )
@@ -16,6 +18,7 @@ type Grpc struct {
 	ChatGRPC         chat.IChatGRPC
 	ProjectGRPC      project.IProjectGRPC
 	NotificationGRPC notification.INotificationGRPC
+	PostGRPC         post.IPostGRPC
 }
 
 func (g *Grpc) Inject(
@@ -23,9 +26,11 @@ func (g *Grpc) Inject(
 	grpcChat pbChat.ChatServiceClient,
 	grpcProject pbProject.ProjectServiceClient,
 	grpcNotification pbNotification.NotificationServiceClient,
+	grpcPost pbPost.PostServiceClient,
 ) {
 	g.UserGRPC = user.NewUserGrpcClient(grpcUser)
 	g.ChatGRPC = chat.NewChatGrpcClient(grpcChat)
 	g.ProjectGRPC = project.NewProjectGrpcClient(grpcProject)
 	g.NotificationGRPC = notification.NewNotificationGrpcClient(grpcNotification)
+	g.PostGRPC = post.NewPostGrpcClient(grpcPost)
 }

@@ -17,3 +17,13 @@ func GetPostToProto(postId string) (*pbPost.GetPostRequest, error) {
 		PostId: postId,
 	}, nil
 }
+
+func UpdatePostToProto(userId, postId, title, content, urlImagePost string) (*pbPost.UpdatePostRequest, error) {
+	return &pbPost.UpdatePostRequest{
+		UserId:       userId,
+		PostId:       postId,
+		Title:        title,
+		Content:      content,
+		UrlImagePost: urlImagePost,
+	}, nil
+}

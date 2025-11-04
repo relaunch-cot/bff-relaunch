@@ -17,6 +17,7 @@ type IPost interface {
 	GetAllPostsFromUser(c *gin.Context)
 	UpdatePost(c *gin.Context)
 	DeletePost(c *gin.Context)
+	UpdateLikesFromPost(c *gin.Context)
 }
 
 func (r *resource) CreatePost(c *gin.Context) {
@@ -175,6 +176,54 @@ func (r *resource) DeletePost(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "post deleted successfully"})
+}
+
+func (r *resource) UpdateLikesFromPost(c *gin.Context) {
+	userId, ok := c.Get("userId")
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting user id from token"})
+		return
+	}
+
+	postId := c.Param("postId")
+	if postId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "postId is required"})
+		return
+	}
+
+	var isLiked bool
+	liked := c.Query("liked")
+	if liked == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "liked query parameter is required"})
+		return
+	}
+
+	if liked != "true" && liked != "false" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "liked query parameter must be 'true' or 'false'"})
+		return
+	}
+
+	if liked == "true" {
+		isLiked = true
+	} else {
+		isLiked = false
+	}
+
+	updateLikesFromPostRequest, err := transformer.UpdateLikesFromPostToProto(userId.(string), postId, isLiked)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	response, err := r.handler.Post.UpdateLikesFromPost(&ctx, updateLikesFromPostRequest)
+	if err != nil {
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
 }
 
 func NewPostServer(handler *handler.Handlers) IPost {

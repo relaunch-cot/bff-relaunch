@@ -14,6 +14,7 @@ type IPost interface {
 	GetAllPostsFromUser(ctx *context.Context, in *pb.GetAllPostsFromUserRequest) (*pb.GetAllPostsFromUserResponse, error)
 	UpdatePost(ctx *context.Context, in *pb.UpdatePostRequest) (*pb.UpdatePostResponse, error)
 	DeletePost(ctx *context.Context, in *pb.DeletePostRequest) error
+	UpdateLikesFromPost(ctx *context.Context, in *pb.UpdateLikesFromPostRequest) (*pb.UpdateLikesFromPostResponse, error)
 }
 
 type postResource struct {
@@ -72,6 +73,15 @@ func (r *postResource) DeletePost(ctx *context.Context, in *pb.DeletePostRequest
 	}
 
 	return nil
+}
+
+func (r *postResource) UpdateLikesFromPost(ctx *context.Context, in *pb.UpdateLikesFromPostRequest) (*pb.UpdateLikesFromPostResponse, error) {
+	updateLikesFromPostResponse, err := r.grpcClient.PostGRPC.UpdateLikesFromPost(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return updateLikesFromPostResponse, nil
 }
 
 func NewPostHandler(grpcClient *grpc.Grpc) IPost {

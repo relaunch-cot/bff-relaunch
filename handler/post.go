@@ -11,6 +11,7 @@ type IPost interface {
 	CreatePost(ctx *context.Context, in *pb.CreatePostRequest) error
 	GetPost(ctx *context.Context, in *pb.GetPostRequest) (*pb.GetPostResponse, error)
 	GetAllPosts(ctx *context.Context) (*pb.GetAllPostsResponse, error)
+	GetAllPostsFromUser(ctx *context.Context, in *pb.GetAllPostsFromUserRequest) (*pb.GetAllPostsFromUserResponse, error)
 	UpdatePost(ctx *context.Context, in *pb.UpdatePostRequest) (*pb.UpdatePostResponse, error)
 	DeletePost(ctx *context.Context, in *pb.DeletePostRequest) error
 }
@@ -44,6 +45,15 @@ func (r *postResource) GetAllPosts(ctx *context.Context) (*pb.GetAllPostsRespons
 	}
 
 	return getAllPostsResponse, nil
+}
+
+func (r *postResource) GetAllPostsFromUser(ctx *context.Context, in *pb.GetAllPostsFromUserRequest) (*pb.GetAllPostsFromUserResponse, error) {
+	getAllPostsFromUserResponse, err := r.grpcClient.PostGRPC.GetAllPostsFromUser(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return getAllPostsFromUserResponse, nil
 }
 
 func (r *postResource) UpdatePost(ctx *context.Context, in *pb.UpdatePostRequest) (*pb.UpdatePostResponse, error) {

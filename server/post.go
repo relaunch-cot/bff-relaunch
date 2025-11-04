@@ -14,6 +14,7 @@ type IPost interface {
 	CreatePost(c *gin.Context)
 	GetPost(c *gin.Context)
 	GetAllPosts(c *gin.Context)
+	GetAllPostsFromUser(c *gin.Context)
 	UpdatePost(c *gin.Context)
 	DeletePost(c *gin.Context)
 }
@@ -77,6 +78,30 @@ func (r *resource) GetAllPosts(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	response, err := r.handler.Post.GetAllPosts(&ctx)
+	if err != nil {
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
+}
+
+func (r *resource) GetAllPostsFromUser(c *gin.Context) {
+	userId, ok := c.Get("userId")
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting user id from token"})
+		return
+	}
+
+	getAllPostsFromUserRequest, err := transformer.GetAllPostsFromUserToProto(userId.(string))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	response, err := r.handler.Post.GetAllPostsFromUser(&ctx, getAllPostsFromUserRequest)
 	if err != nil {
 		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
 		return

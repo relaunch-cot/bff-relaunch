@@ -54,7 +54,7 @@ func AddRoutes(r *gin.RouterGroup) {
 	post := v1.Group("/post")
 	post.POST("", middleware.ValidateUserToken, resource.Servers.Post.CreatePost)
 	post.GET("/:postId", middleware.ValidateUserToken, resource.Servers.Post.GetPost)
-	//post.GET("/user/:userId", middleware.ValidateUserToken, resource.Servers.Post.GetAllPostsFromUser)
+	post.GET("/user", middleware.ValidateUserToken, resource.Servers.Post.GetAllPostsFromUser)
 	post.GET("", middleware.ValidateUserToken, resource.Servers.Post.GetAllPosts)
 	post.PUT("/:postId", middleware.ValidateUserToken, resource.Servers.Post.UpdatePost)
 	post.DELETE("/:postId", middleware.ValidateUserToken, resource.Servers.Post.DeletePost)

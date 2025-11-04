@@ -34,3 +34,9 @@ func DeletePostToProto(userId, postId string) (*pbPost.DeletePostRequest, error)
 		PostId: postId,
 	}, nil
 }
+
+func GetAllPostsFromUserToProto(userId string) (*pbPost.GetAllPostsFromUserRequest, error) {
+	return &pbPost.GetAllPostsFromUserRequest{
+		UserId: userId,
+	}, nil
+}

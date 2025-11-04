@@ -57,5 +57,5 @@ func AddRoutes(r *gin.RouterGroup) {
 	//post.GET("/user/:userId", middleware.ValidateUserToken, resource.Servers.Post.GetAllPostsFromUser)
 	post.GET("", middleware.ValidateUserToken, resource.Servers.Post.GetAllPosts)
 	post.PUT("/:postId", middleware.ValidateUserToken, resource.Servers.Post.UpdatePost)
-	//post.DELETE("/:postId", middleware.ValidateUserToken, resource.Servers.Post.DeletePost)
+	post.DELETE("/:postId", middleware.ValidateUserToken, resource.Servers.Post.DeletePost)
 }

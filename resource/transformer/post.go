@@ -27,3 +27,10 @@ func UpdatePostToProto(userId, postId, title, content, urlImagePost string) (*pb
 		UrlImagePost: urlImagePost,
 	}, nil
 }
+
+func DeletePostToProto(userId, postId string) (*pbPost.DeletePostRequest, error) {
+	return &pbPost.DeletePostRequest{
+		UserId: userId,
+		PostId: postId,
+	}, nil
+}

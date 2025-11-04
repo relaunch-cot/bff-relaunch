@@ -15,6 +15,7 @@ type IPost interface {
 	GetPost(c *gin.Context)
 	GetAllPosts(c *gin.Context)
 	UpdatePost(c *gin.Context)
+	DeletePost(c *gin.Context)
 }
 
 func (r *resource) CreatePost(c *gin.Context) {
@@ -119,6 +120,36 @@ func (r *resource) UpdatePost(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response)
+}
+
+func (r *resource) DeletePost(c *gin.Context) {
+	userId, ok := c.Get("userId")
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting user id from token"})
+		return
+	}
+
+	postId := c.Param("postId")
+	if postId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "postId is required"})
+		return
+	}
+
+	deletePostRequest, err := transformer.DeletePostToProto(userId.(string), postId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	err = r.handler.Post.DeletePost(&ctx, deletePostRequest)
+	if err != nil {
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "post deleted successfully"})
 }
 
 func NewPostServer(handler *handler.Handlers) IPost {

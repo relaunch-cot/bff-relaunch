@@ -12,6 +12,7 @@ type IPost interface {
 	GetPost(ctx *context.Context, in *pb.GetPostRequest) (*pb.GetPostResponse, error)
 	GetAllPosts(ctx *context.Context) (*pb.GetAllPostsResponse, error)
 	UpdatePost(ctx *context.Context, in *pb.UpdatePostRequest) (*pb.UpdatePostResponse, error)
+	DeletePost(ctx *context.Context, in *pb.DeletePostRequest) error
 }
 
 type postResource struct {
@@ -52,6 +53,15 @@ func (r *postResource) UpdatePost(ctx *context.Context, in *pb.UpdatePostRequest
 	}
 
 	return updatePostResponse, nil
+}
+
+func (r *postResource) DeletePost(ctx *context.Context, in *pb.DeletePostRequest) error {
+	err := r.grpcClient.PostGRPC.DeletePost(ctx, in)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func NewPostHandler(grpcClient *grpc.Grpc) IPost {

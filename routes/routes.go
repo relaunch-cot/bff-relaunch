@@ -59,4 +59,5 @@ func AddRoutes(r *gin.RouterGroup) {
 	post.PUT("/:postId", middleware.ValidateUserToken, resource.Servers.Post.UpdatePost)
 	post.DELETE("/:postId", middleware.ValidateUserToken, resource.Servers.Post.DeletePost)
 	post.PATCH("/like/:postId", middleware.ValidateUserToken, resource.Servers.Post.UpdateLikesFromPost)
+	post.POST("/comment/:postId", middleware.ValidateUserToken, resource.Servers.Post.AddCommentToPost)
 }

@@ -48,3 +48,11 @@ func UpdateLikesFromPostToProto(userId, postId string, liked bool) (*pbPost.Upda
 		Liked:  liked,
 	}, nil
 }
+
+func AddCommentToPostToProto(userId, postId, content string) (*pbPost.AddCommentToPostRequest, error) {
+	return &pbPost.AddCommentToPostRequest{
+		UserId:  userId,
+		PostId:  postId,
+		Content: content,
+	}, nil
+}

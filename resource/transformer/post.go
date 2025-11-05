@@ -56,3 +56,11 @@ func AddCommentToPostToProto(userId, postId, content string) (*pbPost.AddComment
 		Content: content,
 	}, nil
 }
+
+func RemoveCommentFromPostToProto(userId, postId, commentId string) (*pbPost.RemoveCommentFromPostRequest, error) {
+	return &pbPost.RemoveCommentFromPostRequest{
+		UserId:    userId,
+		PostId:    postId,
+		CommentId: commentId,
+	}, nil
+}

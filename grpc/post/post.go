@@ -20,6 +20,7 @@ type IPostGRPC interface {
 	DeletePost(ctx *context.Context, in *pbPost.DeletePostRequest) error
 	UpdateLikesFromPost(ctx *context.Context, in *pbPost.UpdateLikesFromPostRequest) (*pbPost.UpdateLikesFromPostResponse, error)
 	AddCommentToPost(ctx *context.Context, in *pbPost.AddCommentToPostRequest) (*pbPost.AddCommentToPostResponse, error)
+	RemoveCommentFromPost(ctx *context.Context, in *pbPost.RemoveCommentFromPostRequest) (*pbPost.RemoveCommentFromPostResponse, error)
 }
 
 func (r *resource) CreatePost(ctx *context.Context, in *pbPost.CreatePostRequest) error {
@@ -87,6 +88,15 @@ func (r *resource) UpdateLikesFromPost(ctx *context.Context, in *pbPost.UpdateLi
 
 func (r *resource) AddCommentToPost(ctx *context.Context, in *pbPost.AddCommentToPostRequest) (*pbPost.AddCommentToPostResponse, error) {
 	response, err := r.grpcClient.AddCommentToPost(*ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
+func (r *resource) RemoveCommentFromPost(ctx *context.Context, in *pbPost.RemoveCommentFromPostRequest) (*pbPost.RemoveCommentFromPostResponse, error) {
+	response, err := r.grpcClient.RemoveCommentFromPost(*ctx, in)
 	if err != nil {
 		return nil, err
 	}

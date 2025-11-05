@@ -19,6 +19,7 @@ type IPost interface {
 	DeletePost(c *gin.Context)
 	UpdateLikesFromPost(c *gin.Context)
 	AddCommentToPost(c *gin.Context)
+	RemoveCommentFromPost(c *gin.Context)
 }
 
 func (r *resource) CreatePost(c *gin.Context) {
@@ -265,6 +266,42 @@ func (r *resource) AddCommentToPost(c *gin.Context) {
 		"message": "comment added to post successfully",
 		"data":    response,
 	})
+}
+
+func (r *resource) RemoveCommentFromPost(c *gin.Context) {
+	userId, ok := c.Get("userId")
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting user id from token"})
+		return
+	}
+
+	postId := c.Param("postId")
+	if postId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "postId is required"})
+		return
+	}
+
+	commentId := c.Param("commentId")
+	if commentId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "commentId is required"})
+		return
+	}
+
+	removeCommentFromPostRequest, err := transformer.RemoveCommentFromPostToProto(userId.(string), postId, commentId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	response, err := r.handler.Post.RemoveCommentFromPost(&ctx, removeCommentFromPostRequest)
+	if err != nil {
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
 }
 
 func NewPostServer(handler *handler.Handlers) IPost {

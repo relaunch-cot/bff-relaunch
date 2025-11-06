@@ -281,9 +281,9 @@ func (r *resource) RemoveCommentFromPost(c *gin.Context) {
 		return
 	}
 
-	commentId := c.Param("commentId")
+	commentId := c.Query("commentId")
 	if commentId == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "commentId is required"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "commentId query parameter is required"})
 		return
 	}
 

@@ -56,6 +56,28 @@ func ValidateUserToken(c *gin.Context) {
 		return
 	}
 
+	var userName interface{}
+	if v, ok := claims["userName"]; ok {
+		userName = v
+	} else if v, ok := claims["user_name"]; ok {
+		userName = v
+	} else {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "token does not contain userName"})
+		return
+	}
+
+	var userEmail interface{}
+	if v, ok := claims["userEmail"]; ok {
+		userEmail = v
+	} else if v, ok := claims["user_email"]; ok {
+		userEmail = v
+	} else {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "token does not contain userEmail"})
+		return
+	}
+
 	c.Set("userId", userId)
+	c.Set("userName", userName)
+	c.Set("userEmail", userEmail)
 	c.Next()
 }

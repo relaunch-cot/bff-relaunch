@@ -41,11 +41,10 @@ func GetAllPostsFromUserToProto(userId string) (*pbPost.GetAllPostsFromUserReque
 	}, nil
 }
 
-func UpdateLikesFromPostToProto(userId, postId string, liked bool) (*pbPost.UpdateLikesFromPostRequest, error) {
+func UpdateLikesFromPostToProto(userId, postId string) (*pbPost.UpdateLikesFromPostRequest, error) {
 	return &pbPost.UpdateLikesFromPostRequest{
 		UserId: userId,
 		PostId: postId,
-		Liked:  liked,
 	}, nil
 }
 

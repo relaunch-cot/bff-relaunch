@@ -193,25 +193,7 @@ func (r *resource) UpdateLikesFromPost(c *gin.Context) {
 		return
 	}
 
-	var isLiked bool
-	liked := c.Query("liked")
-	if liked == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "liked query parameter is required"})
-		return
-	}
-
-	if liked != "true" && liked != "false" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "liked query parameter must be 'true' or 'false'"})
-		return
-	}
-
-	if liked == "true" {
-		isLiked = true
-	} else {
-		isLiked = false
-	}
-
-	updateLikesFromPostRequest, err := transformer.UpdateLikesFromPostToProto(userId.(string), postId, isLiked)
+	updateLikesFromPostRequest, err := transformer.UpdateLikesFromPostToProto(userId.(string), postId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return

@@ -17,9 +17,11 @@ type IPost interface {
 	GetAllPostsFromUser(c *gin.Context)
 	UpdatePost(c *gin.Context)
 	DeletePost(c *gin.Context)
+	GetLikesFromPost(c *gin.Context)
 	UpdateLikesFromPost(c *gin.Context)
 	AddCommentToPost(c *gin.Context)
 	RemoveCommentFromPost(c *gin.Context)
+	GetAllCommentsFromPost(c *gin.Context)
 }
 
 func (r *resource) CreatePost(c *gin.Context) {
@@ -180,6 +182,36 @@ func (r *resource) DeletePost(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "post deleted successfully"})
 }
 
+func (r *resource) GetLikesFromPost(c *gin.Context) {
+	postId := c.Param("postId")
+	if postId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "postId is required"})
+		return
+	}
+
+	userId, ok := c.Get("userId")
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting user id from token"})
+		return
+	}
+
+	getLikesFromPostRequest, err := transformer.GetLikesFromPostToProto(userId.(string), postId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	response, err := r.handler.Post.GetLikesFromPost(&ctx, getLikesFromPostRequest)
+	if err != nil {
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
+}
+
 func (r *resource) UpdateLikesFromPost(c *gin.Context) {
 	userId, ok := c.Get("userId")
 	if !ok {
@@ -278,6 +310,36 @@ func (r *resource) RemoveCommentFromPost(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	response, err := r.handler.Post.RemoveCommentFromPost(&ctx, removeCommentFromPostRequest)
+	if err != nil {
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
+}
+
+func (r *resource) GetAllCommentsFromPost(c *gin.Context) {
+	postId := c.Param("postId")
+	if postId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "postId is required"})
+		return
+	}
+
+	userId, ok := c.Get("userId")
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting user id from token"})
+		return
+	}
+
+	getAllCommentsFromPostRequest, err := transformer.GetAllCommentsFromPostToProto(userId.(string), postId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	response, err := r.handler.Post.GetAllCommentsFromPost(&ctx, getAllCommentsFromPostRequest)
 	if err != nil {
 		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
 		return

@@ -14,9 +14,11 @@ type IPost interface {
 	GetAllPostsFromUser(ctx *context.Context, in *pb.GetAllPostsFromUserRequest) (*pb.GetAllPostsFromUserResponse, error)
 	UpdatePost(ctx *context.Context, in *pb.UpdatePostRequest) (*pb.UpdatePostResponse, error)
 	DeletePost(ctx *context.Context, in *pb.DeletePostRequest) error
+	GetLikesFromPost(ctx *context.Context, in *pb.GetLikesFromPostRequest) (*pb.GetLikesFromPostResponse, error)
 	UpdateLikesFromPost(ctx *context.Context, in *pb.UpdateLikesFromPostRequest) (*pb.UpdateLikesFromPostResponse, error)
 	AddCommentToPost(ctx *context.Context, in *pb.AddCommentToPostRequest) (*pb.AddCommentToPostResponse, error)
 	RemoveCommentFromPost(ctx *context.Context, in *pb.RemoveCommentFromPostRequest) (*pb.RemoveCommentFromPostResponse, error)
+	GetAllCommentsFromPost(ctx *context.Context, in *pb.GetAllCommentsFromPostRequest) (*pb.GetAllCommentsFromPostResponse, error)
 }
 
 type postResource struct {
@@ -77,6 +79,15 @@ func (r *postResource) DeletePost(ctx *context.Context, in *pb.DeletePostRequest
 	return nil
 }
 
+func (r *postResource) GetLikesFromPost(ctx *context.Context, in *pb.GetLikesFromPostRequest) (*pb.GetLikesFromPostResponse, error) {
+	getLikesFromPostResponse, err := r.grpcClient.PostGRPC.GetLikesFromPost(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return getLikesFromPostResponse, nil
+}
+
 func (r *postResource) UpdateLikesFromPost(ctx *context.Context, in *pb.UpdateLikesFromPostRequest) (*pb.UpdateLikesFromPostResponse, error) {
 	updateLikesFromPostResponse, err := r.grpcClient.PostGRPC.UpdateLikesFromPost(ctx, in)
 	if err != nil {
@@ -102,6 +113,15 @@ func (r *postResource) RemoveCommentFromPost(ctx *context.Context, in *pb.Remove
 	}
 
 	return removeCommentFromPostResponse, nil
+}
+
+func (r *postResource) GetAllCommentsFromPost(ctx *context.Context, in *pb.GetAllCommentsFromPostRequest) (*pb.GetAllCommentsFromPostResponse, error) {
+	getAllCommentsFromPostResponse, err := r.grpcClient.PostGRPC.GetAllCommentsFromPost(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return getAllCommentsFromPostResponse, nil
 }
 
 func NewPostHandler(grpcClient *grpc.Grpc) IPost {

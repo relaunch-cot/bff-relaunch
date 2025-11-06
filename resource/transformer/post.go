@@ -41,6 +41,13 @@ func GetAllPostsFromUserToProto(userId string) (*pbPost.GetAllPostsFromUserReque
 	}, nil
 }
 
+func GetLikesFromPostToProto(userId, postId string) (*pbPost.GetLikesFromPostRequest, error) {
+	return &pbPost.GetLikesFromPostRequest{
+		PostId: postId,
+		UserId: userId,
+	}, nil
+}
+
 func UpdateLikesFromPostToProto(userId, postId string) (*pbPost.UpdateLikesFromPostRequest, error) {
 	return &pbPost.UpdateLikesFromPostRequest{
 		UserId: userId,
@@ -61,5 +68,12 @@ func RemoveCommentFromPostToProto(userId, postId, commentId string) (*pbPost.Rem
 		UserId:    userId,
 		PostId:    postId,
 		CommentId: commentId,
+	}, nil
+}
+
+func GetAllCommentsFromPostToProto(userId, postId string) (*pbPost.GetAllCommentsFromPostRequest, error) {
+	return &pbPost.GetAllCommentsFromPostRequest{
+		PostId: postId,
+		UserId: userId,
 	}, nil
 }

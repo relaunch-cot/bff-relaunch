@@ -18,9 +18,11 @@ type IPostGRPC interface {
 	GetAllPostsFromUser(ctx *context.Context, in *pbPost.GetAllPostsFromUserRequest) (*pbPost.GetAllPostsFromUserResponse, error)
 	UpdatePost(ctx *context.Context, in *pbPost.UpdatePostRequest) (*pbPost.UpdatePostResponse, error)
 	DeletePost(ctx *context.Context, in *pbPost.DeletePostRequest) error
+	GetLikesFromPost(ctx *context.Context, in *pbPost.GetLikesFromPostRequest) (*pbPost.GetLikesFromPostResponse, error)
 	UpdateLikesFromPost(ctx *context.Context, in *pbPost.UpdateLikesFromPostRequest) (*pbPost.UpdateLikesFromPostResponse, error)
 	AddCommentToPost(ctx *context.Context, in *pbPost.AddCommentToPostRequest) (*pbPost.AddCommentToPostResponse, error)
 	RemoveCommentFromPost(ctx *context.Context, in *pbPost.RemoveCommentFromPostRequest) (*pbPost.RemoveCommentFromPostResponse, error)
+	GetAllCommentsFromPost(ctx *context.Context, in *pbPost.GetAllCommentsFromPostRequest) (*pbPost.GetAllCommentsFromPostResponse, error)
 }
 
 func (r *resource) CreatePost(ctx *context.Context, in *pbPost.CreatePostRequest) error {
@@ -77,6 +79,15 @@ func (r *resource) DeletePost(ctx *context.Context, in *pbPost.DeletePostRequest
 	return nil
 }
 
+func (r *resource) GetLikesFromPost(ctx *context.Context, in *pbPost.GetLikesFromPostRequest) (*pbPost.GetLikesFromPostResponse, error) {
+	response, err := r.grpcClient.GetLikesFromPost(*ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
 func (r *resource) UpdateLikesFromPost(ctx *context.Context, in *pbPost.UpdateLikesFromPostRequest) (*pbPost.UpdateLikesFromPostResponse, error) {
 	response, err := r.grpcClient.UpdateLikesFromPost(*ctx, in)
 	if err != nil {
@@ -97,6 +108,15 @@ func (r *resource) AddCommentToPost(ctx *context.Context, in *pbPost.AddCommentT
 
 func (r *resource) RemoveCommentFromPost(ctx *context.Context, in *pbPost.RemoveCommentFromPostRequest) (*pbPost.RemoveCommentFromPostResponse, error) {
 	response, err := r.grpcClient.RemoveCommentFromPost(*ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
+func (r *resource) GetAllCommentsFromPost(ctx *context.Context, in *pbPost.GetAllCommentsFromPostRequest) (*pbPost.GetAllCommentsFromPostResponse, error) {
+	response, err := r.grpcClient.GetAllCommentsFromPost(*ctx, in)
 	if err != nil {
 		return nil, err
 	}

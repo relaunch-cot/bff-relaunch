@@ -17,7 +17,7 @@ type IPost interface {
 	GetAllLikesFromPost(ctx *context.Context, in *pb.GetAllLikesFromPostRequest) (*pb.GetAllLikesFromPostResponse, error)
 	UpdateLikesFromPostOrComment(ctx *context.Context, in *pb.UpdateLikesFromPostOrCommentRequest) (*pb.UpdateLikesFromPostOrCommentResponse, error)
 	CreateCommentOrReply(ctx *context.Context, in *pb.CreateCommentOrReplyRequest) (*pb.CreateCommentOrReplyResponse, error)
-	DeleteCommentOrReply(ctx *context.Context, in *pb.DeleteCommentOrReplyRequest) (*pb.DeleteCommentOrReplyResponse, error)
+	DeleteCommentOrReply(ctx *context.Context, in *pb.DeleteCommentOrReplyRequest) error
 	GetAllCommentsFromPost(ctx *context.Context, in *pb.GetAllCommentsFromPostRequest) (*pb.GetAllCommentsFromPostResponse, error)
 }
 
@@ -106,13 +106,13 @@ func (r *postResource) CreateCommentOrReply(ctx *context.Context, in *pb.CreateC
 	return createCommentOrReplyResponse, nil
 }
 
-func (r *postResource) DeleteCommentOrReply(ctx *context.Context, in *pb.DeleteCommentOrReplyRequest) (*pb.DeleteCommentOrReplyResponse, error) {
-	deleteCommentOrReplyResponse, err := r.grpcClient.PostGRPC.DeleteCommentOrReply(ctx, in)
+func (r *postResource) DeleteCommentOrReply(ctx *context.Context, in *pb.DeleteCommentOrReplyRequest) error {
+	err := r.grpcClient.PostGRPC.DeleteCommentOrReply(ctx, in)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return deleteCommentOrReplyResponse, nil
+	return nil
 }
 
 func (r *postResource) GetAllCommentsFromPost(ctx *context.Context, in *pb.GetAllCommentsFromPostRequest) (*pb.GetAllCommentsFromPostResponse, error) {

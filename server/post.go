@@ -334,13 +334,13 @@ func (r *resource) DeleteCommentOrReply(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	response, err := r.handler.Post.DeleteCommentOrReply(&ctx, deleteCommentOrReplyRequest)
+	err = r.handler.Post.DeleteCommentOrReply(&ctx, deleteCommentOrReplyRequest)
 	if err != nil {
 		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, response)
+	c.JSON(http.StatusOK, gin.H{"message": "comment deleted successfully"})
 }
 
 func (r *resource) GetAllCommentsFromPost(c *gin.Context) {

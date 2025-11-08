@@ -41,33 +41,38 @@ func GetAllPostsFromUserToProto(userId string) (*pbPost.GetAllPostsFromUserReque
 	}, nil
 }
 
-func GetLikesFromPostToProto(userId, postId string) (*pbPost.GetLikesFromPostRequest, error) {
-	return &pbPost.GetLikesFromPostRequest{
+func GetAllLikesFromPostToProto(userId, postId string) (*pbPost.GetAllLikesFromPostRequest, error) {
+	return &pbPost.GetAllLikesFromPostRequest{
 		PostId: postId,
 		UserId: userId,
 	}, nil
 }
 
-func UpdateLikesFromPostToProto(userId, postId string) (*pbPost.UpdateLikesFromPostRequest, error) {
-	return &pbPost.UpdateLikesFromPostRequest{
-		UserId: userId,
-		PostId: postId,
-	}, nil
-}
-
-func AddCommentToPostToProto(userId, postId, content string) (*pbPost.AddCommentToPostRequest, error) {
-	return &pbPost.AddCommentToPostRequest{
-		UserId:  userId,
-		PostId:  postId,
-		Content: content,
-	}, nil
-}
-
-func RemoveCommentFromPostToProto(userId, postId, commentId string) (*pbPost.RemoveCommentFromPostRequest, error) {
-	return &pbPost.RemoveCommentFromPostRequest{
+func UpdateLikesFromPostToProto(userId, postId, likeType, commentId string) (*pbPost.UpdateLikesFromPostOrCommentRequest, error) {
+	return &pbPost.UpdateLikesFromPostOrCommentRequest{
 		UserId:    userId,
 		PostId:    postId,
+		Type:      likeType,
 		CommentId: commentId,
+	}, nil
+}
+
+func CreateCommentOrReplyToProto(userId, postId, content, commentType, parentCommentId string) (*pbPost.CreateCommentOrReplyRequest, error) {
+	return &pbPost.CreateCommentOrReplyRequest{
+		UserId:          userId,
+		PostId:          postId,
+		Content:         content,
+		Type:            commentType,
+		ParentCommentId: parentCommentId,
+	}, nil
+}
+
+func DeleteCommentOrReplyToProto(userId, replyId, commentId, commentType string) (*pbPost.DeleteCommentOrReplyRequest, error) {
+	return &pbPost.DeleteCommentOrReplyRequest{
+		UserId:    userId,
+		ReplyId:   replyId,
+		CommentId: commentId,
+		Type:      commentType,
 	}, nil
 }
 

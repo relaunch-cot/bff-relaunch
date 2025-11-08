@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -17,10 +18,10 @@ type IPost interface {
 	GetAllPostsFromUser(c *gin.Context)
 	UpdatePost(c *gin.Context)
 	DeletePost(c *gin.Context)
-	GetLikesFromPost(c *gin.Context)
-	UpdateLikesFromPost(c *gin.Context)
-	AddCommentToPost(c *gin.Context)
-	RemoveCommentFromPost(c *gin.Context)
+	GetAllLikesFromPost(c *gin.Context)
+	UpdateLikesFromPostOrComment(c *gin.Context)
+	CreateCommentOrReply(c *gin.Context)
+	DeleteCommentOrReply(c *gin.Context)
 	GetAllCommentsFromPost(c *gin.Context)
 }
 
@@ -182,7 +183,7 @@ func (r *resource) DeletePost(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "post deleted successfully"})
 }
 
-func (r *resource) GetLikesFromPost(c *gin.Context) {
+func (r *resource) GetAllLikesFromPost(c *gin.Context) {
 	postId := c.Param("postId")
 	if postId == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "postId is required"})
@@ -195,7 +196,7 @@ func (r *resource) GetLikesFromPost(c *gin.Context) {
 		return
 	}
 
-	getLikesFromPostRequest, err := transformer.GetLikesFromPostToProto(userId.(string), postId)
+	getAllLikesFromPostRequest, err := transformer.GetAllLikesFromPostToProto(userId.(string), postId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
@@ -203,7 +204,7 @@ func (r *resource) GetLikesFromPost(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	response, err := r.handler.Post.GetLikesFromPost(&ctx, getLikesFromPostRequest)
+	response, err := r.handler.Post.GetAllLikesFromPost(&ctx, getAllLikesFromPostRequest)
 	if err != nil {
 		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
 		return
@@ -212,7 +213,7 @@ func (r *resource) GetLikesFromPost(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-func (r *resource) UpdateLikesFromPost(c *gin.Context) {
+func (r *resource) UpdateLikesFromPostOrComment(c *gin.Context) {
 	userId, ok := c.Get("userId")
 	if !ok {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting user id from token"})
@@ -225,7 +226,15 @@ func (r *resource) UpdateLikesFromPost(c *gin.Context) {
 		return
 	}
 
-	updateLikesFromPostRequest, err := transformer.UpdateLikesFromPostToProto(userId.(string), postId)
+	var likeType string
+	parentCommentId := c.Query("parentCommentId")
+	if parentCommentId == "" {
+		likeType = "likeToPost"
+	} else {
+		likeType = "likeToComment"
+	}
+
+	updateLikesFromPostOrCommentRequest, err := transformer.UpdateLikesFromPostToProto(userId.(string), postId, likeType, parentCommentId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
@@ -233,7 +242,7 @@ func (r *resource) UpdateLikesFromPost(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	response, err := r.handler.Post.UpdateLikesFromPost(&ctx, updateLikesFromPostRequest)
+	response, err := r.handler.Post.UpdateLikesFromPostOrComment(&ctx, updateLikesFromPostOrCommentRequest)
 	if err != nil {
 		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
 		return
@@ -242,7 +251,7 @@ func (r *resource) UpdateLikesFromPost(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-func (r *resource) AddCommentToPost(c *gin.Context) {
+func (r *resource) CreateCommentOrReply(c *gin.Context) {
 	userId, ok := c.Get("userId")
 	if !ok {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting user id from token"})
@@ -255,14 +264,21 @@ func (r *resource) AddCommentToPost(c *gin.Context) {
 		return
 	}
 
-	in := new(params.AddCommentToPostPOST)
+	in := new(params.CreateCommentOrReplyPOST)
 	err := c.Bind(in)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "error getting body of the request"})
 		return
 	}
 
-	addCommentToPostRequest, err := transformer.AddCommentToPostToProto(userId.(string), postId, in.Content)
+	var commentType string
+	if in.ParentCommentId == "" {
+		commentType = "comment"
+	} else {
+		commentType = "reply"
+	}
+
+	createCommentOrReplyRequest, err := transformer.CreateCommentOrReplyToProto(userId.(string), postId, in.Content, commentType, in.ParentCommentId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
@@ -270,38 +286,47 @@ func (r *resource) AddCommentToPost(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	response, err := r.handler.Post.AddCommentToPost(&ctx, addCommentToPostRequest)
+	response, err := r.handler.Post.CreateCommentOrReply(&ctx, createCommentOrReplyRequest)
 	if err != nil {
 		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
 		return
 	}
 
+	message := fmt.Sprintf("%s added successfully", commentType)
 	c.JSON(http.StatusCreated, gin.H{
-		"message": "comment added to post successfully",
+		"message": message,
 		"data":    response,
 	})
 }
 
-func (r *resource) RemoveCommentFromPost(c *gin.Context) {
+func (r *resource) DeleteCommentOrReply(c *gin.Context) {
 	userId, ok := c.Get("userId")
 	if !ok {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting user id from token"})
 		return
 	}
 
-	postId := c.Param("postId")
-	if postId == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "postId is required"})
+	in := new(params.DeleteCommentOrReplyDELETE)
+	err := c.Bind(in)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error getting body of the request"})
 		return
 	}
 
-	commentId := c.Query("commentId")
-	if commentId == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "commentId query parameter is required"})
+	var commentType string
+	if in.CommentId != "" && in.ReplyId != "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "only one of commentId or replyId should be provided"})
+		return
+	} else if in.CommentId != "" {
+		commentType = "comment"
+	} else if in.ReplyId != "" {
+		commentType = "reply"
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "either commentId or replyId must be provided"})
 		return
 	}
 
-	removeCommentFromPostRequest, err := transformer.RemoveCommentFromPostToProto(userId.(string), postId, commentId)
+	deleteCommentOrReplyRequest, err := transformer.DeleteCommentOrReplyToProto(userId.(string), in.ReplyId, in.CommentId, commentType)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
@@ -309,7 +334,7 @@ func (r *resource) RemoveCommentFromPost(c *gin.Context) {
 
 	ctx := c.Request.Context()
 
-	response, err := r.handler.Post.RemoveCommentFromPost(&ctx, removeCommentFromPostRequest)
+	response, err := r.handler.Post.DeleteCommentOrReply(&ctx, deleteCommentOrReplyRequest)
 	if err != nil {
 		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
 		return

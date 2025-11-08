@@ -14,10 +14,10 @@ type IPost interface {
 	GetAllPostsFromUser(ctx *context.Context, in *pb.GetAllPostsFromUserRequest) (*pb.GetAllPostsFromUserResponse, error)
 	UpdatePost(ctx *context.Context, in *pb.UpdatePostRequest) (*pb.UpdatePostResponse, error)
 	DeletePost(ctx *context.Context, in *pb.DeletePostRequest) error
-	GetLikesFromPost(ctx *context.Context, in *pb.GetLikesFromPostRequest) (*pb.GetLikesFromPostResponse, error)
-	UpdateLikesFromPost(ctx *context.Context, in *pb.UpdateLikesFromPostRequest) (*pb.UpdateLikesFromPostResponse, error)
-	AddCommentToPost(ctx *context.Context, in *pb.AddCommentToPostRequest) (*pb.AddCommentToPostResponse, error)
-	RemoveCommentFromPost(ctx *context.Context, in *pb.RemoveCommentFromPostRequest) (*pb.RemoveCommentFromPostResponse, error)
+	GetAllLikesFromPost(ctx *context.Context, in *pb.GetAllLikesFromPostRequest) (*pb.GetAllLikesFromPostResponse, error)
+	UpdateLikesFromPostOrComment(ctx *context.Context, in *pb.UpdateLikesFromPostOrCommentRequest) (*pb.UpdateLikesFromPostOrCommentResponse, error)
+	CreateCommentOrReply(ctx *context.Context, in *pb.CreateCommentOrReplyRequest) (*pb.CreateCommentOrReplyResponse, error)
+	DeleteCommentOrReply(ctx *context.Context, in *pb.DeleteCommentOrReplyRequest) (*pb.DeleteCommentOrReplyResponse, error)
 	GetAllCommentsFromPost(ctx *context.Context, in *pb.GetAllCommentsFromPostRequest) (*pb.GetAllCommentsFromPostResponse, error)
 }
 
@@ -79,40 +79,40 @@ func (r *postResource) DeletePost(ctx *context.Context, in *pb.DeletePostRequest
 	return nil
 }
 
-func (r *postResource) GetLikesFromPost(ctx *context.Context, in *pb.GetLikesFromPostRequest) (*pb.GetLikesFromPostResponse, error) {
-	getLikesFromPostResponse, err := r.grpcClient.PostGRPC.GetLikesFromPost(ctx, in)
+func (r *postResource) GetAllLikesFromPost(ctx *context.Context, in *pb.GetAllLikesFromPostRequest) (*pb.GetAllLikesFromPostResponse, error) {
+	getLikesAllFromPostResponse, err := r.grpcClient.PostGRPC.GetAllLikesFromPost(ctx, in)
 	if err != nil {
 		return nil, err
 	}
 
-	return getLikesFromPostResponse, nil
+	return getLikesAllFromPostResponse, nil
 }
 
-func (r *postResource) UpdateLikesFromPost(ctx *context.Context, in *pb.UpdateLikesFromPostRequest) (*pb.UpdateLikesFromPostResponse, error) {
-	updateLikesFromPostResponse, err := r.grpcClient.PostGRPC.UpdateLikesFromPost(ctx, in)
+func (r *postResource) UpdateLikesFromPostOrComment(ctx *context.Context, in *pb.UpdateLikesFromPostOrCommentRequest) (*pb.UpdateLikesFromPostOrCommentResponse, error) {
+	updateLikesFromPostOrCommentResponse, err := r.grpcClient.PostGRPC.UpdateLikesFromPostOrComment(ctx, in)
 	if err != nil {
 		return nil, err
 	}
 
-	return updateLikesFromPostResponse, nil
+	return updateLikesFromPostOrCommentResponse, nil
 }
 
-func (r *postResource) AddCommentToPost(ctx *context.Context, in *pb.AddCommentToPostRequest) (*pb.AddCommentToPostResponse, error) {
-	addCommentToPostResponse, err := r.grpcClient.PostGRPC.AddCommentToPost(ctx, in)
+func (r *postResource) CreateCommentOrReply(ctx *context.Context, in *pb.CreateCommentOrReplyRequest) (*pb.CreateCommentOrReplyResponse, error) {
+	createCommentOrReplyResponse, err := r.grpcClient.PostGRPC.CreateCommentOrReply(ctx, in)
 	if err != nil {
 		return nil, err
 	}
 
-	return addCommentToPostResponse, nil
+	return createCommentOrReplyResponse, nil
 }
 
-func (r *postResource) RemoveCommentFromPost(ctx *context.Context, in *pb.RemoveCommentFromPostRequest) (*pb.RemoveCommentFromPostResponse, error) {
-	removeCommentFromPostResponse, err := r.grpcClient.PostGRPC.RemoveCommentFromPost(ctx, in)
+func (r *postResource) DeleteCommentOrReply(ctx *context.Context, in *pb.DeleteCommentOrReplyRequest) (*pb.DeleteCommentOrReplyResponse, error) {
+	deleteCommentOrReplyResponse, err := r.grpcClient.PostGRPC.DeleteCommentOrReply(ctx, in)
 	if err != nil {
 		return nil, err
 	}
 
-	return removeCommentFromPostResponse, nil
+	return deleteCommentOrReplyResponse, nil
 }
 
 func (r *postResource) GetAllCommentsFromPost(ctx *context.Context, in *pb.GetAllCommentsFromPostRequest) (*pb.GetAllCommentsFromPostResponse, error) {

@@ -18,10 +18,10 @@ type IPostGRPC interface {
 	GetAllPostsFromUser(ctx *context.Context, in *pbPost.GetAllPostsFromUserRequest) (*pbPost.GetAllPostsFromUserResponse, error)
 	UpdatePost(ctx *context.Context, in *pbPost.UpdatePostRequest) (*pbPost.UpdatePostResponse, error)
 	DeletePost(ctx *context.Context, in *pbPost.DeletePostRequest) error
-	GetLikesFromPost(ctx *context.Context, in *pbPost.GetLikesFromPostRequest) (*pbPost.GetLikesFromPostResponse, error)
-	UpdateLikesFromPost(ctx *context.Context, in *pbPost.UpdateLikesFromPostRequest) (*pbPost.UpdateLikesFromPostResponse, error)
-	AddCommentToPost(ctx *context.Context, in *pbPost.AddCommentToPostRequest) (*pbPost.AddCommentToPostResponse, error)
-	RemoveCommentFromPost(ctx *context.Context, in *pbPost.RemoveCommentFromPostRequest) (*pbPost.RemoveCommentFromPostResponse, error)
+	GetAllLikesFromPost(ctx *context.Context, in *pbPost.GetAllLikesFromPostRequest) (*pbPost.GetAllLikesFromPostResponse, error)
+	UpdateLikesFromPostOrComment(ctx *context.Context, in *pbPost.UpdateLikesFromPostOrCommentRequest) (*pbPost.UpdateLikesFromPostOrCommentResponse, error)
+	CreateCommentOrReply(ctx *context.Context, in *pbPost.CreateCommentOrReplyRequest) (*pbPost.CreateCommentOrReplyResponse, error)
+	DeleteCommentOrReply(ctx *context.Context, in *pbPost.DeleteCommentOrReplyRequest) (*pbPost.DeleteCommentOrReplyResponse, error)
 	GetAllCommentsFromPost(ctx *context.Context, in *pbPost.GetAllCommentsFromPostRequest) (*pbPost.GetAllCommentsFromPostResponse, error)
 }
 
@@ -79,8 +79,8 @@ func (r *resource) DeletePost(ctx *context.Context, in *pbPost.DeletePostRequest
 	return nil
 }
 
-func (r *resource) GetLikesFromPost(ctx *context.Context, in *pbPost.GetLikesFromPostRequest) (*pbPost.GetLikesFromPostResponse, error) {
-	response, err := r.grpcClient.GetLikesFromPost(*ctx, in)
+func (r *resource) GetAllLikesFromPost(ctx *context.Context, in *pbPost.GetAllLikesFromPostRequest) (*pbPost.GetAllLikesFromPostResponse, error) {
+	response, err := r.grpcClient.GetAllLikesFromPost(*ctx, in)
 	if err != nil {
 		return nil, err
 	}
@@ -88,8 +88,8 @@ func (r *resource) GetLikesFromPost(ctx *context.Context, in *pbPost.GetLikesFro
 	return response, nil
 }
 
-func (r *resource) UpdateLikesFromPost(ctx *context.Context, in *pbPost.UpdateLikesFromPostRequest) (*pbPost.UpdateLikesFromPostResponse, error) {
-	response, err := r.grpcClient.UpdateLikesFromPost(*ctx, in)
+func (r *resource) UpdateLikesFromPostOrComment(ctx *context.Context, in *pbPost.UpdateLikesFromPostOrCommentRequest) (*pbPost.UpdateLikesFromPostOrCommentResponse, error) {
+	response, err := r.grpcClient.UpdateLikesFromPostOrComment(*ctx, in)
 	if err != nil {
 		return nil, err
 	}
@@ -97,8 +97,8 @@ func (r *resource) UpdateLikesFromPost(ctx *context.Context, in *pbPost.UpdateLi
 	return response, nil
 }
 
-func (r *resource) AddCommentToPost(ctx *context.Context, in *pbPost.AddCommentToPostRequest) (*pbPost.AddCommentToPostResponse, error) {
-	response, err := r.grpcClient.AddCommentToPost(*ctx, in)
+func (r *resource) CreateCommentOrReply(ctx *context.Context, in *pbPost.CreateCommentOrReplyRequest) (*pbPost.CreateCommentOrReplyResponse, error) {
+	response, err := r.grpcClient.CreateCommentOrReply(*ctx, in)
 	if err != nil {
 		return nil, err
 	}
@@ -106,8 +106,8 @@ func (r *resource) AddCommentToPost(ctx *context.Context, in *pbPost.AddCommentT
 	return response, nil
 }
 
-func (r *resource) RemoveCommentFromPost(ctx *context.Context, in *pbPost.RemoveCommentFromPostRequest) (*pbPost.RemoveCommentFromPostResponse, error) {
-	response, err := r.grpcClient.RemoveCommentFromPost(*ctx, in)
+func (r *resource) DeleteCommentOrReply(ctx *context.Context, in *pbPost.DeleteCommentOrReplyRequest) (*pbPost.DeleteCommentOrReplyResponse, error) {
+	response, err := r.grpcClient.DeleteCommentOrReply(*ctx, in)
 	if err != nil {
 		return nil, err
 	}

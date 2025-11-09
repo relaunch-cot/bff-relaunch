@@ -93,13 +93,13 @@ func (r *resource) GetAllPosts(c *gin.Context) {
 }
 
 func (r *resource) GetAllPostsFromUser(c *gin.Context) {
-	userId, ok := c.Get("userId")
-	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting user id from token"})
+	userId := c.Param("userId")
+	if userId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "userId is required"})
 		return
 	}
 
-	getAllPostsFromUserRequest, err := transformer.GetAllPostsFromUserToProto(userId.(string))
+	getAllPostsFromUserRequest, err := transformer.GetAllPostsFromUserToProto(userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return

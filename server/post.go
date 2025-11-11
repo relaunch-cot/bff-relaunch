@@ -9,6 +9,7 @@ import (
 	params "github.com/relaunch-cot/bff-relaunch/params/post"
 	"github.com/relaunch-cot/bff-relaunch/resource/transformer"
 	"github.com/relaunch-cot/lib-relaunch-cot/pkg/httpresponse"
+	validation "github.com/relaunch-cot/lib-relaunch-cot/validate/posts"
 )
 
 type IPost interface {
@@ -45,6 +46,12 @@ func (r *resource) CreatePost(c *gin.Context) {
 		return
 	}
 
+	err = validation.ValidateCreatePostRequest(createPostRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
+		return
+	}
+
 	ctx := c.Request.Context()
 
 	err = r.handler.Post.CreatePost(&ctx, createPostRequest)
@@ -66,6 +73,12 @@ func (r *resource) GetPost(c *gin.Context) {
 	getPostRequest, err := transformer.GetPostToProto(postId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	err = validation.ValidateGetPostRequest(getPostRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
 		return
 	}
 
@@ -102,6 +115,12 @@ func (r *resource) GetAllPostsFromUser(c *gin.Context) {
 	getAllPostsFromUserRequest, err := transformer.GetAllPostsFromUserToProto(userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	err = validation.ValidateGetAllPostsFromUserRequest(getAllPostsFromUserRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
 		return
 	}
 
@@ -142,6 +161,12 @@ func (r *resource) UpdatePost(c *gin.Context) {
 		return
 	}
 
+	err = validation.ValidateUpdatePostRequest(updatePostRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
+		return
+	}
+
 	ctx := c.Request.Context()
 
 	response, err := r.handler.Post.UpdatePost(&ctx, updatePostRequest)
@@ -172,6 +197,12 @@ func (r *resource) DeletePost(c *gin.Context) {
 		return
 	}
 
+	err = validation.ValidateDeletePostRequest(deletePostRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
+		return
+	}
+
 	ctx := c.Request.Context()
 
 	err = r.handler.Post.DeletePost(&ctx, deletePostRequest)
@@ -199,6 +230,12 @@ func (r *resource) GetAllLikesFromPost(c *gin.Context) {
 	getAllLikesFromPostRequest, err := transformer.GetAllLikesFromPostToProto(userId.(string), postId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	err = validation.ValidateGetAllLikesFromPostRequest(getAllLikesFromPostRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
 		return
 	}
 
@@ -237,6 +274,12 @@ func (r *resource) UpdateLikesFromPostOrComment(c *gin.Context) {
 	updateLikesFromPostOrCommentRequest, err := transformer.UpdateLikesFromPostToProto(userId.(string), postId, likeType, parentCommentId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	err = validation.ValidateUpdateLikesFromPostOrCommentRequest(updateLikesFromPostOrCommentRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
 		return
 	}
 
@@ -281,6 +324,12 @@ func (r *resource) CreateCommentOrReply(c *gin.Context) {
 	createCommentOrReplyRequest, err := transformer.CreateCommentOrReplyToProto(userId.(string), postId, in.Content, commentType, in.ParentCommentId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	err = validation.ValidateCreateCommentOrReplyRequest(createCommentOrReplyRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
 		return
 	}
 
@@ -332,6 +381,12 @@ func (r *resource) DeleteCommentOrReply(c *gin.Context) {
 		return
 	}
 
+	err = validation.DeleteCommentOrReplyRequest(deleteCommentOrReplyRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
+		return
+	}
+
 	ctx := c.Request.Context()
 
 	err = r.handler.Post.DeleteCommentOrReply(&ctx, deleteCommentOrReplyRequest)
@@ -359,6 +414,12 @@ func (r *resource) GetAllCommentsFromPost(c *gin.Context) {
 	getAllCommentsFromPostRequest, err := transformer.GetAllCommentsFromPostToProto(userId.(string), postId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	err = validation.GetAllCommentsFromPostRequest(getAllCommentsFromPostRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
 		return
 	}
 

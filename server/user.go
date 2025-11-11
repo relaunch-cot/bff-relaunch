@@ -8,6 +8,7 @@ import (
 	"github.com/relaunch-cot/bff-relaunch/resource/transformer"
 	libModels "github.com/relaunch-cot/lib-relaunch-cot/models"
 	"github.com/relaunch-cot/lib-relaunch-cot/pkg/httpresponse"
+	validation "github.com/relaunch-cot/lib-relaunch-cot/validate/user"
 
 	params "github.com/relaunch-cot/bff-relaunch/params/user"
 
@@ -41,6 +42,12 @@ func (r *resource) CreateUser(c *gin.Context) {
 		return
 	}
 
+	err = validation.ValidateCreateUserRequest(createUserReq)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
+		return
+	}
+
 	ctx := c.Request.Context()
 
 	err = r.handler.User.CreateUser(&ctx, createUserReq)
@@ -68,6 +75,12 @@ func (r *resource) LoginUser(c *gin.Context) {
 	loginUserReq, err := transformer.LoginUserToProto(user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
+	}
+
+	err = validation.ValidateLoginUserRequest(loginUserReq)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
 		return
 	}
 
@@ -106,6 +119,12 @@ func (r *resource) UpdateUser(c *gin.Context) {
 		return
 	}
 
+	err = validation.ValidateUpdateUserRequest(updateUserReq)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
+		return
+	}
+
 	ctx := c.Request.Context()
 	err = r.handler.User.UpdateUser(&ctx, updateUserReq)
 	if err != nil {
@@ -130,6 +149,12 @@ func (r *resource) UpdateUserPassword(c *gin.Context) {
 		return
 	}
 
+	err = validation.UpdateUserPasswordRequest(updateUserPasswordReq)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
+		return
+	}
+
 	ctx := c.Request.Context()
 	err = r.handler.User.UpdateUserPassword(&ctx, updateUserPasswordReq)
 	if err != nil {
@@ -151,6 +176,12 @@ func (r *resource) DeleteUser(c *gin.Context) {
 	deleteUserReq, err := transformer.DeleteUserToProto(in.Email, in.Password)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
+	}
+
+	err = validation.ValidateDeleteUserRequest(deleteUserReq)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
 		return
 	}
 
@@ -196,6 +227,12 @@ func (r *resource) GenerateReportPDF(c *gin.Context) {
 		return
 	}
 
+	err = validation.ValidateGenerateReportRequest(generateReportReq)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
+		return
+	}
+
 	ctx := c.Request.Context()
 	response, err := r.handler.User.GenerateReportPDF(&ctx, generateReportReq)
 	if err != nil {
@@ -224,6 +261,12 @@ func (r *resource) SendPasswordRecoveryEmail(c *gin.Context) {
 		return
 	}
 
+	err = validation.ValidateSendPasswordRecoveryEmailRequest(sendPasswordRecoveryEmailReq)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
+		return
+	}
+
 	ctx := c.Request.Context()
 	err = r.handler.User.SendPasswordRecoveryEmail(&ctx, sendPasswordRecoveryEmailReq)
 	if err != nil {
@@ -244,6 +287,12 @@ func (r *resource) GetUserProfile(c *gin.Context) {
 	getUserProfileRequest, err := transformer.GetUserProfileToProto(userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
+	}
+
+	err = validation.ValidateGetUserRequest(getUserProfileRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
 		return
 	}
 

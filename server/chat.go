@@ -9,6 +9,7 @@ import (
 	"github.com/relaunch-cot/bff-relaunch/resource/transformer"
 	"github.com/relaunch-cot/bff-relaunch/websocket"
 	"github.com/relaunch-cot/lib-relaunch-cot/pkg/httpresponse"
+	validation "github.com/relaunch-cot/lib-relaunch-cot/validate/chat"
 )
 
 type IChat interface {
@@ -39,6 +40,12 @@ func (r *resource) CreateNewChat(c *gin.Context) {
 		return
 	}
 
+	err = validation.ValidateCreateNewChatRequest(createNewChatRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
+		return
+	}
+
 	ctx := c.Request.Context()
 	err = r.handler.Chat.CreateNewChat(&ctx, createNewChatRequest)
 	if err != nil {
@@ -66,6 +73,12 @@ func (r *resource) SendMessage(c *gin.Context) {
 	sendMessageRequest, err := transformer.SendMessageToProto(in.ChatId, senderId, in.MessageContent)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
+	}
+
+	err = validation.ValidateSendMessageRequest(sendMessageRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
 		return
 	}
 
@@ -102,6 +115,12 @@ func (r *resource) GetAllMessagesFromChat(c *gin.Context) {
 		return
 	}
 
+	err = validation.ValidateGetAllMessagesFromChatRequest(getAllMessagesFromChatRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
+		return
+	}
+
 	ctx := c.Request.Context()
 
 	getAllMessagesFromChatResponse, err := r.handler.Chat.GetAllMessagesFromChat(&ctx, getAllMessagesFromChatRequest)
@@ -123,6 +142,12 @@ func (r *resource) GetAllChatsFromUser(c *gin.Context) {
 	getAllChatsFromUserRequest, err := transformer.GetAllChatsFromUserToProto(userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
+	}
+
+	err = validation.ValidateGetAllChatsFromUserRequest(getAllChatsFromUserRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
 		return
 	}
 
@@ -159,6 +184,12 @@ func (r *resource) GetChatFromUsers(c *gin.Context) {
 		return
 	}
 
+	err = validation.ValidateGetChatFromUsersRequest(getChatFromUsersRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
+		return
+	}
+
 	ctx := c.Request.Context()
 
 	getChatFromUsersResponse, err := r.handler.Chat.GetChatFromUsers(&ctx, getChatFromUsersRequest)
@@ -180,6 +211,12 @@ func (r *resource) GetChatById(c *gin.Context) {
 	getChatByIdRequest, err := transformer.GetChatByIdToProto(chatId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
+	}
+
+	err = validation.ValidateGetChatByIdRequest(getChatByIdRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
 		return
 	}
 

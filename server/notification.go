@@ -9,7 +9,7 @@ import (
 	"github.com/relaunch-cot/bff-relaunch/resource/transformer"
 	"github.com/relaunch-cot/bff-relaunch/websocket"
 	"github.com/relaunch-cot/lib-relaunch-cot/pkg/httpresponse"
-	validate "github.com/relaunch-cot/lib-relaunch-cot/validate/notification"
+	validation "github.com/relaunch-cot/lib-relaunch-cot/validate/notification"
 )
 
 type INotification interface {
@@ -33,15 +33,15 @@ func (r *resource) SendNotification(c *gin.Context) {
 		return
 	}
 
-	isValidNotificationType := validate.IsValidNotificationType(in.Type)
-	if !isValidNotificationType {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "invalid notification type"})
-		return
-	}
-
 	sendNotificationRequest, err := transformer.SendNotificationToProto(senderId, in.ReceiverId, in.Title, in.Content, in.Type)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
+	}
+
+	err = validation.ValidateSendNotificationRequest(sendNotificationRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
 		return
 	}
 
@@ -79,6 +79,12 @@ func (r *resource) GetNotification(c *gin.Context) {
 		return
 	}
 
+	err = validation.ValidateGetNotificationRequest(getNotificationRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
+		return
+	}
+
 	ctx := c.Request.Context()
 
 	getNotificationResponse, err := r.handler.Notification.GetNotification(&ctx, getNotificationRequest)
@@ -100,6 +106,12 @@ func (r *resource) GetAllNotificationsFromUser(c *gin.Context) {
 	getAllNotificationsFromUserRequest, err := transformer.GetAllNotificationsFromUserToProto(userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
+	}
+
+	err = validation.ValidateGetAllNotificationsFromUserRequest(getAllNotificationsFromUserRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
 		return
 	}
 
@@ -127,6 +139,12 @@ func (r *resource) DeleteNotification(c *gin.Context) {
 		return
 	}
 
+	err = validation.ValidateGetNotificationRequest(getNotificationRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
+		return
+	}
+
 	ctx := c.Request.Context()
 
 	getNotificationResponse, err := r.handler.Notification.GetNotification(&ctx, getNotificationRequest)
@@ -138,6 +156,12 @@ func (r *resource) DeleteNotification(c *gin.Context) {
 	deleteNotificationRequest, err := transformer.DeleteNotificationToProto(notificationId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
+	}
+
+	err = validation.ValidateDeleteNotificationRequest(deleteNotificationRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
 		return
 	}
 
@@ -166,6 +190,12 @@ func (r *resource) DeleteAllNotificationsFromUser(c *gin.Context) {
 	deleteAllNotificationsFromUserRequest, err := transformer.DeleteAllNotificationsFromUserToProto(userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
+	}
+
+	err = validation.ValidateDeleteAllNotificationsFromUserRequest(deleteAllNotificationsFromUserRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
 		return
 	}
 

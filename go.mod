@@ -9,7 +9,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/golang/protobuf v1.5.4
 	github.com/gorilla/websocket v1.5.3
-	github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251124224430-e9352dcbe570
+	github.com/relaunch-cot/lib-relaunch-cot v0.0.0-20251125003205-2ab9f7fc5660
 	google.golang.org/grpc v1.73.0
 )
 

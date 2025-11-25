@@ -41,10 +41,11 @@ func UpdateUserToProto(in *libModels.User) (*pb.UpdateUserRequest, error) {
 	}
 
 	newUser := &pbBaseModels.User{
-		UserId:   in.UserId,
-		Name:     in.Name,
-		Email:    in.Email,
-		Settings: &baseModelsSettings,
+		UserId:       in.UserId,
+		Name:         in.Name,
+		Email:        in.Email,
+		Settings:     &baseModelsSettings,
+		UrlImageUser: in.UrlImageUser,
 	}
 
 	return &pb.UpdateUserRequest{

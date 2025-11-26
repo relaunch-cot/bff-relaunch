@@ -133,13 +133,13 @@ func (r *resource) GetAllMessagesFromChat(c *gin.Context) {
 }
 
 func (r *resource) GetAllChatsFromUser(c *gin.Context) {
-	userId := c.Param("userId")
-	if userId == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "the path param userId is required"})
+	userId, ok := c.Get("userId")
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "failed to get userId from context"})
 		return
 	}
 
-	getAllChatsFromUserRequest, err := transformer.GetAllChatsFromUserToProto(userId)
+	getAllChatsFromUserRequest, err := transformer.GetAllChatsFromUserToProto(userId.(string))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
 		return
@@ -163,6 +163,12 @@ func (r *resource) GetAllChatsFromUser(c *gin.Context) {
 }
 
 func (r *resource) GetChatFromUsers(c *gin.Context) {
+	userId, ok := c.Get("userId")
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "failed to get userId from context"})
+		return
+	}
+
 	in := new(params.GetChatFromUsersGET)
 	err := c.BindQuery(in)
 	if err != nil {
@@ -178,7 +184,7 @@ func (r *resource) GetChatFromUsers(c *gin.Context) {
 		return
 	}
 
-	getChatFromUsersRequest, err := transformer.GetChatFromUsersToProto(userIds)
+	getChatFromUsersRequest, err := transformer.GetChatFromUsersToProto(userIds, userId.(string))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
 		return
@@ -202,13 +208,19 @@ func (r *resource) GetChatFromUsers(c *gin.Context) {
 }
 
 func (r *resource) GetChatById(c *gin.Context) {
+	userId, ok := c.Get("userId")
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "failed to get userId from context"})
+		return
+	}
+
 	chatId := c.Param("chatId")
 	if chatId == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "the path param chatId is required"})
 		return
 	}
 
-	getChatByIdRequest, err := transformer.GetChatByIdToProto(chatId)
+	getChatByIdRequest, err := transformer.GetChatByIdToProto(chatId, userId.(string))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
 		return

@@ -25,12 +25,16 @@ func GetAllChatsFromUserToProto(userId string) (*pb.GetAllChatsFromUserRequest, 
 	return &pb.GetAllChatsFromUserRequest{UserId: userId}, nil
 }
 
-func GetChatFromUsersToProto(userIds []string) (*pb.GetChatFromUsersRequest, error) {
+func GetChatFromUsersToProto(userIds []string, userId string) (*pb.GetChatFromUsersRequest, error) {
 	return &pb.GetChatFromUsersRequest{
 		UserIds: userIds,
+		UserId:  userId,
 	}, nil
 }
 
-func GetChatByIdToProto(chatId string) (*pb.GetChatByIdRequest, error) {
-	return &pb.GetChatByIdRequest{ChatId: chatId}, nil
+func GetChatByIdToProto(chatId, userId string) (*pb.GetChatByIdRequest, error) {
+	return &pb.GetChatByIdRequest{
+		ChatId: chatId,
+		UserId: userId,
+	}, nil
 }

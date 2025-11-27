@@ -24,6 +24,7 @@ type IUser interface {
 	GenerateReportPDF(c *gin.Context)
 	SendPasswordRecoveryEmail(c *gin.Context)
 	GetUserProfile(c *gin.Context)
+	GetUserByName(c *gin.Context)
 }
 
 func (r *resource) CreateUser(c *gin.Context) {
@@ -305,6 +306,36 @@ func (r *resource) GetUserProfile(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, userProfile)
+}
+
+func (r *resource) GetUserByName(c *gin.Context) {
+	userName := c.Param("userName")
+	if userName == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "userName is required"})
+		return
+	}
+
+	getUserByNameRequest, err := transformer.GetUserByNameToProto(userName)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error transforming params to proto"})
+		return
+	}
+
+	err = validation.ValidateGetUserByNameRequest(getUserByNameRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "error validating the body of the request. Details:" + err.Error()})
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	user, err := r.handler.User.GetUserByName(&ctx, getUserByNameRequest)
+	if err != nil {
+		c.JSON(httpresponse.TransformGrpcCodeToHttpStatus(err), gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
 }
 
 func NewUserServer(handler *handler.Handlers) IUser {

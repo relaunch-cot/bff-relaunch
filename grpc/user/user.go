@@ -15,6 +15,7 @@ type IUserGRPC interface {
 	GenerateReportFromJSON(ctx *context.Context, in *pb.GenerateReportRequest) (*pb.GenerateReportResponse, error)
 	SendPasswordRecoveryEmail(ctx *context.Context, in *pb.SendPasswordRecoveryEmailRequest) error
 	GetUserProfile(ctx *context.Context, in *pb.GetUserProfileRequest) (*pb.GetUserProfileResponse, error)
+	GetUserByName(ctx *context.Context, in *pb.GetUserByNameRequest) (*pb.GetUserByNameResponse, error)
 }
 
 type resource struct {
@@ -86,6 +87,15 @@ func (r *resource) SendPasswordRecoveryEmail(ctx *context.Context, in *pb.SendPa
 
 func (r *resource) GetUserProfile(ctx *context.Context, in *pb.GetUserProfileRequest) (*pb.GetUserProfileResponse, error) {
 	response, err := r.grpcClient.GetUserProfile(*ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
+func (r *resource) GetUserByName(ctx *context.Context, in *pb.GetUserByNameRequest) (*pb.GetUserByNameResponse, error) {
+	response, err := r.grpcClient.GetUserByName(*ctx, in)
 	if err != nil {
 		return nil, err
 	}

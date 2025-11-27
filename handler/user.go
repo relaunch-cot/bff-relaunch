@@ -16,6 +16,7 @@ type IUser interface {
 	GenerateReportPDF(ctx *context.Context, in *pb.GenerateReportRequest) (*pb.GenerateReportResponse, error)
 	SendPasswordRecoveryEmail(ctx *context.Context, in *pb.SendPasswordRecoveryEmailRequest) error
 	GetUserProfile(ctx *context.Context, in *pb.GetUserProfileRequest) (*pb.GetUserProfileResponse, error)
+	GetUserByName(ctx *context.Context, in *pb.GetUserByNameRequest) (*pb.GetUserByNameResponse, error)
 }
 
 type userResource struct {
@@ -87,6 +88,15 @@ func (r *userResource) SendPasswordRecoveryEmail(ctx *context.Context, in *pb.Se
 
 func (r *userResource) GetUserProfile(ctx *context.Context, in *pb.GetUserProfileRequest) (*pb.GetUserProfileResponse, error) {
 	response, err := r.grpc.UserGRPC.GetUserProfile(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
+func (r *userResource) GetUserByName(ctx *context.Context, in *pb.GetUserByNameRequest) (*pb.GetUserByNameResponse, error) {
+	response, err := r.grpc.UserGRPC.GetUserByName(ctx, in)
 	if err != nil {
 		return nil, err
 	}

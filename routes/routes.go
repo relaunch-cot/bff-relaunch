@@ -23,6 +23,7 @@ func AddRoutes(r *gin.RouterGroup) {
 	user.DELETE("", middleware.ValidateUserToken, resource.Servers.User.DeleteUser)
 	user.POST("/send-email", resource.Servers.User.SendPasswordRecoveryEmail)
 	user.GET("/:userId", middleware.ValidateUserToken, resource.Servers.User.GetUserProfile)
+	user.GET("/search/:userName", middleware.ValidateUserToken, resource.Servers.User.GetUserByName)
 
 	reports := v1.Group("/reports")
 	reports.POST("/generate-pdf", middleware.ValidateUserToken, resource.Servers.User.GenerateReportPDF)

@@ -1,61 +1,40 @@
-# Nome do Projeto: ReLaunch
+# BFF Relaunch - Backend For Frontend
 
-## Integrantes:
-- Matheus Oliveira Mangualde - 22301194
-- Henrique de Freitas Issa - 22300732
-- João Pedro Bastos Neves - 22301330
-- Eduardo Mapa Avelar Damasceno - 22301674
-- Eike Levy Albano Neves - 22402772
-- Vinícius Theodoro Giovani - 22300821
+Um **BFF (Backend For Frontend)** desenvolvido em Go que atua como gateway de API, recebendo requisições do frontend e orquestrando a comunicação com os microsserviços do ecossistema Relaunch.
 
-**Turma 3B2**
+## 🎯 Sobre o Projeto
 
-# Como rodar
-- Baixar o golang
-- Setar no terminal 'go env -w GOPRIVATE=*' para conseguir acessar os repositorios privados do github
-- Rodar 'go mod tidy' no terminal para instalar as dependencias
-- Setar as variaveis de ambiente:
-  - PORT: (porta em que o bff vai rodar)
-  - IS_INSECURE = true
-  - USER_MICROSERVICE_CONN: (url de conexão para o microserviço de user)
-  - CHAT_MICROSERVICE_CONN: (url de conexão para o microserviço de chat)
-  - NOTIFICATION_MICROSERVICE_CONN (url de conexão para o microserviço de notificação)
-  - PROJECT_MICROSERVICE_CONN (url de conexão para o microserviço de projeto)
-  - JWT_SECRET (secret key do token de usuário definida no microserviço de user)
-- Rodar 'go build main.go' no terminal
-- Rodar 'go run main.go' no terminal
+Este projeto é responsável por centralizar e gerenciar todas as requisições vindas do frontend, distribuindo as responsabilidades entre diferentes microsserviços através de comunicação gRPC. Ele implementa autenticação JWT, validação de requisições e fornece uma API REST padronizada para o cliente.
 
-## Funcionalidades implementadas
-- [x]  Permitir login do usuário
-- [x]  Permitir cadastro do usuário
-- [x]  Usuário redefinir  a senha
-- [x]  Permitir deletar usuário
-- [x]  O usuário deve poder personalizar as configurações do perfil
-- [x]  Buscar informações de perfil do usuario
-- [x]  Deve ser possível exportar relatórios em PDF.
-- [x]  Enviar Email de recuperação de senha
-- [x]  Usuário deletar sua conta
-- [x]  Usuário fazer logout da plataforma
-- [x]  Criar um novo chat entre usuarios
-- [x]  Enviar mensagens no chat entre usuários
-- [x]  Buscar todas as mensagens de um chat específico
-- [x]  Buscar todos os chats de um usuário
-- [x]  Criar um novo projeto (usuários que sejam clientes)
-- [x]  Buscar um projeto específico
-- [x]  Buscar todos os projetos de um usuário
-- [x]  Adicionar freelancer a um projeto
-- [x]  Remover freelancer de um projeto
-- [x]  Listar todos os projetos que estejam sem um freelancer desenvolvendo o mesmo, ou seja, disponíveis para desenvolvimento
-- [x]  Enviar norificações para o usuário (seja de uma mensagem nova, seja de solicitação para participar de um projeto...)
-- [x]  Buscar informações de uma notificação específica
-- [x]  Buscar todas as notificações de um usuário
+## 🚀 Tecnologias
 
-## Padrões requisitados
-- padrão singleton aplicado
-### Padrões GoF aplicados além do singleton:
-- Adapter
-- Facade
-- Strategy
-- Factory
-- Iterator
-### além disso o projeto também aplica padrões de arquitetura (Repository, Dependency Injection) que não são parte dos GoF clássicos, mas complementam a estrutura.
+- **Go** - Linguagem de programação principal
+- **Gin** - Framework web para criação da API REST
+- **gRPC** - Comunicação entre microsserviços
+- **JWT** - Autenticação e autorização
+- **Protocol Buffers** - Serialização de dados
+
+## 🏗️ Arquitetura
+
+O BFF atua como uma camada intermediária que:
+
+- Recebe requisições HTTP/REST do frontend
+- Valida tokens JWT e autentica usuários
+- Roteia as requisições para os microsserviços apropriados via gRPC
+- Agrega respostas de múltiplos serviços quando necessário
+- Retorna dados formatados para o cliente
+
+## 📋 Funcionalidades Principais
+
+- **Autenticação e Autorização**: Middleware JWT para validação de tokens
+- **Gerenciamento de Usuários**: CRUD de usuários
+- **Notificações**: Sistema de notificações em tempo real
+- **Validação de Requisições**: Validação robusta de dados de entrada
+- **Tratamento de Erros**: Respostas padronizadas e informativas
+
+## 🔐 Segurança
+
+- Validação de tokens JWT em todas as rotas protegidas
+- Suporte a múltiplos formatos de claims (camelCase e snake_case)
+- Sanitização de headers de autorização
+- Configuração de secrets via variáveis de ambiente
